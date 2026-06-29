@@ -1,0 +1,2864 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HR Pro: I-9 Audit Notes Prep — Live Demo</title>
+    <meta name="description" content="Try HR Pro I-9 Audit Notes Prep in your browser. Walk through the audit workflow and preview reports — no install required.">
+    <style>
+        
+        :root {
+            --primary: #0F4C81;
+            --secondary: #47B5FF;
+            --accent-blue: #E8F1F5;
+            --accent-yellow: #FFF3E0;
+            --text-dark: #2C3E50;
+            --text-light: #7F8C8D;
+            --bg-color: #F4F7F6;
+            --border-radius: 8px;
+        }
+
+        /* Force backgrounds to print */
+        * {
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+        }
+
+        body { font-family: 'Inter', -apple-system, sans-serif; margin: 0; padding: 44px 0 0 0; background-color: var(--bg-color); color: var(--text-dark); display: flex; height: 100vh; overflow: hidden; box-sizing: border-box; }
+        .demo-banner {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: center;
+            gap: 10px 16px;
+            padding: 8px 16px;
+            background: linear-gradient(90deg, #0F4C81, #1a6bb5);
+            color: white;
+            font-size: 0.82rem;
+            box-shadow: 0 2px 10px rgba(15, 76, 129, 0.25);
+        }
+        .demo-banner strong { font-weight: 700; }
+        .demo-banner a { color: #bfdbfe; text-decoration: none; font-weight: 600; }
+        .demo-banner a:hover { text-decoration: underline; }
+        .demo-banner .btn-demo-sample {
+            background: white;
+            color: #0F4C81;
+            border: none;
+            border-radius: 6px;
+            padding: 5px 12px;
+            font-size: 0.78rem;
+            font-weight: 700;
+            cursor: pointer;
+        }
+        .demo-banner .btn-demo-sample:hover { background: #e8f1f5; }
+        .demo-disabled, .js-save-word:disabled, .js-save-pdf:disabled {
+            opacity: 0.55;
+            cursor: not-allowed !important;
+        }
+        .demo-only-notice {
+            background: #fff7ed;
+            border: 1px solid #fed7aa;
+            color: #9a3412;
+            border-radius: 8px;
+            padding: 10px 14px;
+            font-size: 0.88rem;
+            line-height: 1.45;
+        }
+        
+        /* Sidebar */
+        .sidebar {
+            width: 150px;
+            flex: 0 0 150px;
+            background-color: white;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.05);
+            display: flex;
+            flex-direction: column;
+            z-index: 10;
+            overflow-y: auto;
+        }
+        .brand { padding: 12px 12px; font-size: 0.9rem; font-weight: 800; color: var(--primary); border-bottom: 1px solid #eee; display: flex; align-items: center; flex-wrap: wrap; gap: 4px; }
+        .brand span { background: var(--primary); color: white; padding: 2px 5px; border-radius: 3px; font-size: 0.65rem; }
+        .brand-version { width: 100%; font-size: 0.62rem; font-weight: 600; color: #64748b; margin-top: 2px; letter-spacing: 0.02em; }
+        .nav-menu { list-style: none; padding: 8px 0; margin: 0; flex-grow: 1; }
+        .nav-menu-secondary { flex-grow: 0; margin-top: auto; border-top: 1px solid #eee; padding-top: 4px; padding-bottom: 6px; }
+        .nav-item { padding: 7px 10px; font-size: 0.78rem; cursor: pointer; font-weight: 500; color: var(--text-light); transition: all 0.2s; border-left: 3px solid transparent; line-height: 1.25; }
+        .nav-item:hover, .nav-item.active { background-color: var(--accent-blue); color: var(--primary); }
+        .nav-item.active { border-left-color: var(--primary); font-weight: 600; }
+
+        /* Content */
+        .main-content {
+            flex: 1 1 0%;
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding: 30px 40px;
+        }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+        .header h1 { margin: 0; font-size: 1.8rem; color: var(--text-dark); }
+        .tab-content {
+            display: none;
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 30px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+            animation: fadeIn 0.3s ease-in-out;
+            min-width: 0;
+            max-width: 100%;
+            box-sizing: border-box;
+        }
+        .tab-content.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        h2 { margin-top: 0; padding-bottom: 15px; border-bottom: 2px solid var(--bg-color); color: var(--primary); font-size: 1.3rem; }
+        h3 { font-size: 1.1rem; color: #334155; margin-top: 25px; margin-bottom: 15px; border-bottom: 1px solid #e2e8f0; padding-bottom: 5px;}
+
+        /* Forms & Inputs */
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
+        .form-group { display: flex; flex-direction: column; }
+        .admin-reviewed-next { margin-top: 14px; display: flex; justify-content: flex-end; }
+        .admin-tab-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            border-bottom: 2px solid var(--bg-color);
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+        .admin-tab-header h2 {
+            margin: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+        .admin-refresh-btn { flex-shrink: 0; white-space: nowrap; }
+        .admin-header-actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; flex-shrink: 0; }
+        label { font-weight: 600; margin-bottom: 8px; font-size: 0.9rem; color: var(--text-dark); }
+        input[type="text"], input[type="date"], select, textarea { padding: 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.95rem; font-family: inherit; transition: border-color 0.2s; }
+        input[type="text"]:focus, select:focus, textarea:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(15, 76, 129, 0.1); }
+        textarea { resize: vertical; min-height: 80px; }
+
+        /* Checkboxes */
+        .checkbox-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 12px; margin-top: 10px; }
+        .checkbox-wrapper { display: flex; align-items: flex-start; background: #f8fafc; padding: 10px; border-radius: 6px; border: 1px solid #e2e8f0; position: relative; }
+        .checkbox-wrapper input[type="checkbox"] { margin-top: 3px; margin-right: 10px; cursor: pointer; }
+        .checkbox-wrapper label { margin-bottom: 0; font-weight: 400; cursor: pointer; font-size: 0.9rem; flex-grow: 1;}
+        .delete-btn { background: none; border: none; color: #ef4444; cursor: pointer; font-size: 0.8rem; padding: 0 5px; display: none; }
+        .checkbox-wrapper.custom:hover .delete-btn { display: block; }
+        .substantive { border-left: 4px solid #3b82f6; }
+        .technical { border-left: 4px solid #f59e0b; }
+
+        .add-custom-row { display: flex; gap: 10px; margin-top: 15px; padding-top: 15px; border-top: 1px dashed #cbd5e1; align-items: center; background: #fcfcfc; padding: 15px; border-radius: 6px; }
+
+        /* Legend Info Box */
+        .legend-box { margin-top: 20px; padding: 15px; background: #f8fafc; border-radius: 6px; border: 1px solid #e2e8f0; font-size: 0.9rem; line-height: 1.5; }
+        .legend-title { font-weight: bold; margin-bottom: 8px; color: #334155; }
+        .legend-blue { background-color: #dbeafe; color: #1e3a8a; font-weight: 600; padding: 2px 6px; border-radius: 4px; }
+        .legend-yellow { background-color: #fef08a; color: #78350f; font-weight: 600; padding: 2px 6px; border-radius: 4px; }
+
+        /* Dynamic Recs */
+        .mapped-rec-card { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 15px; margin-bottom: 15px; border-left: 4px solid var(--primary);}
+        .mapped-rec-card.substantive-card { border-left-color: #3b82f6; }
+        .mapped-rec-card.technical-card { border-left-color: #f59e0b; }
+        .rec-error-title { font-weight: 600; font-size: 0.95rem; margin-bottom: 10px; color: #1e293b; display: flex; justify-content: space-between; align-items: center;}
+        .rec-error-title span { background: #e2e8f0; padding: 2px 8px; border-radius: 12px; font-size: 0.75rem; font-weight: normal;}
+
+        /* Step 5 — Recommendations layout (matches app screenshots) */
+        #tab-recs .recs-header-row {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 16px 20px;
+            margin-bottom: 4px;
+            padding-bottom: 18px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        #tab-recs .recs-header-row h2 {
+            margin: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+            flex: 1 1 260px;
+        }
+        #tab-recs .recs-template-card {
+            flex: 1 1 300px;
+            max-width: 100%;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 12px 14px;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 10px;
+        }
+        #tab-recs .recs-template-card .recs-template-label {
+            width: 100%;
+            font-size: 0.78rem;
+            font-weight: 700;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            color: #64748b;
+            margin: 0 0 2px 0;
+        }
+        #tab-recs .recs-template-card select {
+            flex: 1 1 200px;
+            min-width: 0;
+            max-width: 100%;
+        }
+        #tab-recs .recs-page-intro {
+            font-size: 0.92rem;
+            color: #64748b;
+            margin: 16px 0 18px;
+            line-height: 1.55;
+            max-width: 72ch;
+        }
+        #tab-settings .settings-excel-panel {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: flex-start;
+            gap: 14px 18px;
+            margin-bottom: 0;
+            padding: 16px 18px;
+            background: linear-gradient(165deg, #ffffff 0%, #f1f5f9 100%);
+            border: 1px solid #cbd5e1;
+            border-radius: 10px;
+            border-left: 4px solid var(--primary);
+            box-shadow: 0 2px 8px rgba(15, 23, 42, 0.05);
+        }
+        #tab-settings .settings-excel-panel .settings-excel-copy {
+            flex: 1 1 280px;
+            margin: 0;
+            font-size: 0.9rem;
+            color: #334155;
+            line-height: 1.5;
+        }
+        #tab-settings .settings-excel-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            align-items: center;
+        }
+        #tab-recs #dynamic-recs-container {
+            min-height: 100px;
+        }
+        .recs-empty-state {
+            text-align: center;
+            padding: 32px 22px;
+            color: #64748b;
+            background: #fafbfc;
+            border: 1px dashed #cbd5e1;
+            border-radius: 10px;
+            font-size: 0.94rem;
+            line-height: 1.55;
+            max-width: 520px;
+            margin: 0 auto 8px;
+        }
+        .recs-empty-state strong {
+            display: block;
+            font-size: 1.02rem;
+            color: var(--primary);
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+        #tab-recs .recs-doc-expl-heading {
+            margin-top: 36px;
+        }
+        #tab-recs .form-group textarea#employeeExplanation {
+            min-height: 140px;
+        }
+        #tab-recs .form-group textarea#empExplanation {
+            min-height: 180px;
+        }
+
+        .report-preview-shell {
+            max-width: min(960px, 100%);
+            margin: 16px auto 0;
+            box-sizing: border-box;
+        }
+        .report-preview-empty {
+            display: none;
+            background: #f8fafc;
+            border: 1px dashed #cbd5e1;
+            border-radius: 8px;
+            padding: 28px 24px;
+            text-align: center;
+            color: #64748b;
+            font-size: 0.92rem;
+            line-height: 1.55;
+        }
+        .report-preview-empty.is-visible { display: block; }
+        /* Re-verifications */
+        .rev-block { background: white; border: 1px solid #cbd5e1; border-radius: 8px; padding: 20px; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.02);}
+        .rev-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .rev-header h4 { margin: 0; font-size: 1.1rem; color: var(--primary); }
+
+        /* Buttons */
+        .btn-container { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee; }
+        .btn { padding: 10px 24px; border-radius: 6px; font-size: 1rem; font-weight: 500; cursor: pointer; transition: all 0.2s; border: none; }
+        .btn-outline { background: white; border: 1px solid #cbd5e1; color: var(--text-dark); }
+        .btn-outline:hover { background: #f8fafc; }
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-primary:hover { background: #0c3e69; }
+        .btn-success { background: #10b981; color: white; }
+        .btn-success:hover { background: #059669; }
+        .btn-small { padding: 6px 12px; font-size: 0.85rem; }
+
+        .toolbar { display: flex; gap: 10px; margin-bottom: 8px; }
+        .toolbar select { flex-grow: 1; padding: 8px; font-size: 0.85rem;}
+
+        /* Report */
+        #reportPreview {
+            background: white;
+            padding: 40px;
+            line-height: 1.5;
+            color: #1e293b;
+            box-shadow: 0 4px 28px rgba(15, 23, 42, 0.07);
+            border-radius: 6px;
+            border: 1px solid #e2e8f0;
+            max-width: 100%;
+            box-sizing: border-box;
+            overflow-wrap: break-word;
+        }
+        .report-header { text-align: center; margin-bottom: 30px; border-bottom: 2px solid var(--text-dark); padding-bottom: 10px; }
+        .report-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; font-size: 0.9rem; }
+        .report-section {
+            margin-bottom: 26px;
+            border: none;
+            border-radius: 10px;
+            overflow: hidden;
+            background: #f8fafc;
+            box-shadow: none;
+        }
+        .report-section-title {
+            background: #e2e8f0;
+            color: #0F4C81;
+            padding: 10px 14px;
+            font-weight: 700;
+            font-size: 0.92rem;
+            border: none;
+            border-bottom: none;
+        }
+        .report-section-content {
+            padding: 14px 16px 16px;
+            font-size: 0.92rem;
+            line-height: 1.55;
+            overflow-wrap: break-word;
+            word-break: break-word;
+        }
+        .audit-meta-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 14px 20px;
+            padding: 18px 20px;
+            margin: 0 0 22px 0;
+            background: #f1f5f9;
+            border-radius: 10px;
+            border: none;
+            font-size: 0.9rem;
+            line-height: 1.45;
+        }
+        .audit-meta-grid .meta-label {
+            display: block;
+            font-size: 0.72rem;
+            font-weight: 700;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            color: #64748b;
+            margin-bottom: 6px;
+        }
+        .audit-meta-grid .meta-value {
+            display: block;
+            min-width: 0;
+            overflow-wrap: anywhere;
+            word-break: break-word;
+            color: #0f172a;
+        }
+        .mapped-pair { margin-bottom: 16px; padding-bottom: 0; border-bottom: none; display: flex; flex-direction: column; gap: 8px;}
+        .mapped-pair:last-child { margin-bottom: 0; padding-bottom: 0; }
+        .pair-error { font-weight: 600; color: #334155; line-height: 1.45; overflow-wrap: break-word; }
+        
+        .err-highlight-substantive {
+            background-color: #dbeafe; /* light blue */
+            color: #1e3a8a; /* dark blue */
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+        
+        .err-highlight-technical {
+            background-color: #fef08a; /* light yellow */
+            color: #78350f; /* dark amber/brown */
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+
+        .pair-rec {
+            margin-top: 4px;
+            padding: 12px 14px;
+            border-radius: 8px;
+            border: none;
+            border-left: none;
+            color: #334155;
+            white-space: pre-wrap;
+            overflow-wrap: break-word;
+            word-break: break-word;
+            background: #fff;
+            line-height: 1.55;
+        }
+
+        #reportPreview.report-editing { outline: 2px dashed #0F4C81; outline-offset: 6px; min-height: 120px; border-radius: 4px; }
+        #reportPreview[contenteditable="true"] { cursor: text; }
+
+        /* Employer memo signature lines — avoid <p> spacers (Chromium PDF applies large default p margins). */
+        .report-sig-lines {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            margin: 0;
+            padding: 8px 0 0 0;
+            border-top: 1px solid #e2e8f0;
+            font-size: 11pt;
+            line-height: 1.3;
+            color: #334155;
+            white-space: normal;
+        }
+        .report-sig-lines .report-sig-label {
+            font-weight: 700;
+            color: #0F4C81;
+            margin: 0;
+            padding: 0;
+        }
+        body.pdf-export-mode #reportPreview .report-sig-lines {
+            display: flex !important;
+            flex-direction: column !important;
+            gap: 2px !important;
+            line-height: 1.3 !important;
+            margin: 0 !important;
+            padding: 6px 0 0 0 !important;
+            font-size: 11pt !important;
+        }
+        body.pdf-export-mode #reportPreview .report-sig-lines .report-sig-label {
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+
+        .report-export-strip {
+            display: flex; flex-wrap: wrap; align-items: center; gap: 12px;
+            background: white; padding: 16px 18px; border-radius: 8px; margin-bottom: 16px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.06); border: 1px solid #e2e8f0;
+        }
+        .report-export-strip .export-strip-title { width: 100%; font-weight: 700; color: var(--primary); font-size: 1rem; margin-bottom: 4px; }
+        .report-export-strip .export-strip-hint { width: 100%; font-size: 0.85rem; color: #64748b; margin-bottom: 8px; }
+        .report-export-strip .btn-export-word { min-width: 160px; font-weight: 600; }
+        .report-export-strip .btn-export-pdf { min-width: 160px; font-weight: 600; }
+
+        .report-preview-toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin: 0 0 10px; }
+        .report-word-section {
+            background: white;
+            padding: 18px 20px;
+            border-radius: 8px;
+            margin-top: 24px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+            border: 1px solid #e2e8f0;
+        }
+        .report-word-section .word-section-title { font-weight: 700; color: var(--primary); font-size: 0.95rem; margin: 0 0 6px; }
+        .report-word-section .word-section-hint { font-size: 0.82rem; color: #64748b; margin: 0 0 14px; line-height: 1.45; }
+        .report-word-section .word-section-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+        .report-word-preview-shell {
+            display: none;
+            margin-top: 16px;
+            max-height: 420px;
+            overflow: auto;
+            border: 1px dashed #cbd5e1;
+            border-radius: 6px;
+            background: #f8fafc;
+        }
+        .report-word-preview-shell.is-visible { display: block; }
+        #wordDocumentPreview {
+            background: white;
+            padding: 24px;
+            line-height: 1.5;
+            color: #1e293b;
+            font-family: Calibri, 'Segoe UI', Arial, sans-serif;
+            font-size: 11pt;
+            overflow-wrap: break-word;
+        }
+        #wordDocumentPreview.report-editing { outline: 2px dashed #0F4C81; outline-offset: 4px; min-height: 80px; }
+        #wordDocumentPreview[contenteditable="true"] { cursor: text; }
+        .word-import-root { font-family: Calibri, 'Segoe UI', Arial, sans-serif; font-size: 11pt; }
+
+        .output-folder-panel {
+            margin-top: 20px;
+            padding: 18px;
+            background: #fff;
+            border: 1px solid #e2e8f0;
+            border-radius: var(--border-radius);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        }
+        .output-folder-panel h3 { margin: 0 0 10px; font-size: 1rem; color: var(--primary); border: none; padding: 0; }
+        .output-folder-panel .folder-path {
+            font-size: 0.82rem;
+            color: #475569;
+            word-break: break-all;
+            background: #f8fafc;
+            padding: 10px 12px;
+            border-radius: 6px;
+            margin-bottom: 12px;
+            border: 1px solid #e2e8f0;
+        }
+        .output-folder-actions { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-bottom: 10px; }
+        .output-folder-help { font-size: 0.82rem; color: #64748b; line-height: 1.45; margin: 0; }
+        .settings-page-intro { font-size: 0.92rem; color: #64748b; line-height: 1.55; margin: 0 0 22px; max-width: 720px; }
+
+        body.pdf-export-mode .sidebar,
+        body.pdf-export-mode .main-content > .header,
+        body.pdf-export-mode .report-export-strip,
+        body.pdf-export-mode .report-preview-toolbar,
+        body.pdf-export-mode .report-word-section,
+        body.pdf-export-mode #tab-report > .btn-container { display: none !important; }
+        body.pdf-export-mode .main-content { padding: 12px 16px !important; overflow: visible !important; }
+        body.pdf-export-mode #tab-report.tab-content { background: #fff !important; }
+
+        .audit-note-doc-header {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: #0F4C81;
+            color: #fff;
+            margin: 0 0 22px 0;
+            border-radius: 10px;
+            overflow: hidden;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+
+        @page {
+            margin: 16mm 14mm 18mm 14mm;
+        }
+
+        /* PDF / print: strip layout chrome — Chromium often draws faint lines on table grids and inline borders on blocks. */
+        body.pdf-export-mode .report-preview-shell {
+            max-width: none !important;
+            margin: 0 !important;
+        }
+        body.pdf-export-mode #reportPreview {
+            box-shadow: none !important;
+            outline: none !important;
+            border: none !important;
+            padding: 36px 34px !important;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+        }
+        body.pdf-export-mode #reportPreview.report-editing {
+            outline: none !important;
+        }
+        body.pdf-export-mode #reportPreview table {
+            border: none !important;
+            border-width: 0 !important;
+            border-style: hidden !important;
+            border-collapse: collapse !important;
+            border-spacing: 0 !important;
+            box-shadow: none !important;
+            border-radius: 0 !important;
+        }
+        body.pdf-export-mode #reportPreview td,
+        body.pdf-export-mode #reportPreview th,
+        body.pdf-export-mode #reportPreview tr {
+            border: none !important;
+            border-width: 0 !important;
+            border-style: hidden !important;
+            outline: none !important;
+            box-shadow: none !important;
+        }
+        /* Action blocks: no box border in PDF — soft panel read still separates from section body */
+        body.pdf-export-mode #reportPreview p.report-action-req {
+            border: none !important;
+            background-color: #f1f5f9 !important;
+            box-shadow: none !important;
+        }
+        body.pdf-export-mode #reportPreview #auditNoteExportBody div {
+            border: none !important;
+            box-shadow: none !important;
+            outline: none !important;
+        }
+
+        @media print {
+            .sidebar, .btn-container, .header, .add-custom-row, .toolbar, button,
+            .report-export-strip, .report-preview-toolbar, .report-word-section { display: none !important; }
+            .main-content { padding: 0; overflow: visible; }
+            .report-preview-shell {
+                max-width: none !important;
+                margin: 0 !important;
+            }
+            #reportPreview {
+                padding: 36px 34px !important;
+                box-shadow: none !important;
+                outline: none !important;
+                border: none !important;
+                display: block !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            #reportPreview table {
+                border: none !important;
+                border-width: 0 !important;
+                border-style: hidden !important;
+                border-collapse: collapse !important;
+                border-spacing: 0 !important;
+                box-shadow: none !important;
+                border-radius: 0 !important;
+            }
+            #reportPreview td,
+            #reportPreview th,
+            #reportPreview tr {
+                border: none !important;
+                border-width: 0 !important;
+                border-style: hidden !important;
+                outline: none !important;
+                box-shadow: none !important;
+            }
+            #reportPreview p.report-action-req {
+                border: none !important;
+                background-color: #f1f5f9 !important;
+                box-shadow: none !important;
+            }
+            #reportPreview #auditNoteExportBody div {
+                border: none !important;
+                box-shadow: none !important;
+                outline: none !important;
+            }
+            #reportPreview .report-sig-lines {
+                display: flex !important;
+                flex-direction: column !important;
+                gap: 2px !important;
+                line-height: 1.3 !important;
+                margin: 0 !important;
+                padding: 6px 0 0 0 !important;
+                font-size: 11pt !important;
+            }
+            #reportPreview .report-sig-lines .report-sig-label {
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+            .tab-content { display: none; }
+            body.pdf-export-mode #tab-report.tab-content { display: block !important; }
+            body { background: white; height: auto; }
+        }
+    </style>
+</head>
+<body>
+    <div class="demo-banner" role="status">
+        <span><strong>Public demo</strong> — preview only. Explore the workflow; saving Word, PDF, or Excel files is disabled.</span>
+        <button type="button" class="btn-demo-sample" onclick="loadSampleDemoData()">Load sample employee</button>
+        <a href="../">About this demo</a>
+    </div>
+
+    <div class="sidebar">
+        <div class="brand">HR Pro <span>Audit</span><span class="brand-version">v1.0.2</span></div>
+        <ul class="nav-menu">
+            <li class="nav-item active" onclick="openTab('tab-admin', this)">1. Audit Details</li>
+            <li class="nav-item" onclick="openTab('tab-sec1', this)">2. Sec. 1</li>
+            <li class="nav-item" onclick="openTab('tab-sec2', this)">3. Sec. 2</li>
+            <li class="nav-item" onclick="openTab('tab-sec3', this)">4. Sec. 3</li>
+            <li class="nav-item" onclick="openTab('tab-recs', this)">5. Recs</li>
+            <li class="nav-item" onclick="generateReport(this)">6. Report</li>
+        </ul>
+        <ul class="nav-menu nav-menu-secondary">
+            <li class="nav-item" onclick="openTab('tab-settings', this)">Settings</li>
+        </ul>
+    </div>
+
+    <div class="main-content">
+        <div class="header">
+            <h1 id="pageTitle">Audit Administration</h1>
+        </div>
+
+        <form id="auditForm">
+            <input type="file" id="excelImportHidden" accept=".xlsx,.xls,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" style="display:none" aria-hidden="true" />
+            <input type="file" id="libraryImportHidden" accept=".json,application/json" style="display:none" aria-hidden="true" />
+            <!-- TAB 1: Admin -->
+            <div id="tab-admin" class="tab-content active">
+                <div class="admin-tab-header">
+                    <h2>Administrative Details</h2>
+                    <div class="admin-header-actions">
+                        <button type="button" class="btn btn-outline btn-small" id="btnNoErrorsSavePdf" onclick="generateNoErrorsAndSavePdf()" title="Generate a clean no-errors report preview (Ctrl+Shift+N or Cmd+Shift+N)">No Errors (preview)</button>
+                        <button type="button" class="btn btn-outline btn-small admin-refresh-btn" onclick="refreshAuditDetails()" title="Clear this audit and start fresh for a new employee">Refresh</button>
+                    </div>
+                </div>
+                <div class="form-grid">
+                    <div class="form-group" style="grid-column: span 2;"><label>Purpose</label><input type="text" id="auditPurpose" value="Form I-9 Correction"></div>
+                    <div class="form-group"><label>Date of Audit</label><input type="date" id="auditDate" required></div>
+                    <div class="form-group"><label>Department</label><input type="text" id="department"></div>
+                    <div class="form-group"><label>Employee Full Name</label><input type="text" id="employeeName" required></div>
+                    <div class="form-group">
+                        <label>Reviewed by</label>
+                        <input type="text" id="auditorName" placeholder="e.g., HR (Your Company)">
+                        <div class="admin-reviewed-next">
+                            <button type="button" class="btn btn-primary" onclick="document.querySelectorAll('.nav-item')[1].click()">Next Step</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="legend-box">
+                    <div class="legend-title">Error Classification Guide:</div>
+                    <div style="margin-bottom: 10px;">
+                        <span class="legend-blue">Blue</span> – The errors marked in blue are Substantive errors that usually require an explanation or a new I-9 to be completed.
+                    </div>
+                    <div>
+                        <span class="legend-yellow">Yellow</span> – The errors marked in yellow are Technical errors that can be corrected in the I-9 with initials and date once completed.
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB: Settings -->
+            <div id="tab-settings" class="tab-content">
+                <h2>Settings <span style="font-size:0.75rem;font-weight:600;color:#64748b;">(app v1.0.2)</span></h2>
+                <p class="settings-page-intro">Manage your custom error library, recommendation templates, Excel bulk edit, and where audit notes are saved. These options apply across all audits and are not cleared when you use Refresh on Audit Details.</p>
+
+                <div class="output-folder-panel">
+                    <h3>Error library &amp; templates (JSON)</h3>
+                    <p class="output-folder-help" style="margin-bottom: 10px;">Export the <strong>custom error types</strong> you added with “+ Add” in Sections 1–3 and your <strong>recommendation templates</strong>. Copy the JSON file to another computer, open this app, and use <strong>Import</strong> so the lists match. Built-in errors always come from the app; this file only carries extras you created.</p>
+                    <div class="output-folder-actions">
+                        <button type="button" class="btn btn-outline btn-small js-demo-settings-export" onclick="exportLibraryJson()">Export library to JSON…</button>
+                        <button type="button" class="btn btn-outline btn-small js-demo-settings-export" onclick="importLibraryJson()">Import library from JSON…</button>
+                    </div>
+                </div>
+
+                <div class="output-folder-panel settings-excel-panel">
+                    <h3>Excel — errors &amp; recommendations</h3>
+                    <p class="settings-excel-copy output-folder-help" style="margin-bottom: 10px;"><strong>Excel:</strong> Export all error types with <strong>Selected</strong> (Y/N) and <strong>Recommendation</strong> side by side. Edit the workbook, then import to sync checkboxes and recommendation text in the current audit.</p>
+                    <div class="settings-excel-actions output-folder-actions">
+                        <button type="button" class="btn btn-outline btn-small js-excel-export" onclick="exportErrorsRecommendationsExcel()">Export Excel</button>
+                        <button type="button" class="btn btn-outline btn-small js-excel-import" onclick="importErrorsRecommendationsExcel()">Import Excel…</button>
+                    </div>
+                </div>
+
+                <div id="outputFolderPanel" class="output-folder-panel" style="display: none;">
+                    <h3>Where to save audit notes (desktop app)</h3>
+                    <p class="output-folder-help" style="margin-bottom: 10px;">Word and PDF audit notes save here. Each save also writes a small <strong>.meta.json</strong> file next to the document so you can build a consolidated PDF summary later.</p>
+                    <div class="folder-path" id="auditOutputFolderPath">(default: Downloads)</div>
+                    <div class="output-folder-actions">
+                        <button type="button" class="btn btn-outline btn-small" id="btnChooseAuditFolder">Choose folder…</button>
+                        <button type="button" class="btn btn-outline btn-small" id="btnResetAuditFolderDownloads">Use Downloads</button>
+                        <button type="button" class="btn btn-primary btn-small" id="btnConsolidateAuditNotes">Generate consolidated audit notes (PDF)</button>
+                    </div>
+                    <p class="output-folder-help">Consolidated PDF includes each employee’s name, errors summary, and recommendations from every <code>*Audit Note.meta.json</code> in this folder (sorted by employee name).</p>
+                </div>
+            </div>
+
+            <!-- TAB 2: Section 1 -->
+            <div id="tab-sec1" class="tab-content">
+                <h2>Section 1: Employee Information & Attestation</h2>
+                <div class="checkbox-container" id="container_sec1_err"></div>
+                <div class="add-custom-row">
+                    <input type="text" id="custom_sec1_input" placeholder="Type new error to reuse..." style="flex-grow: 1;">
+                    <select id="custom_sec1_type" style="width: 130px;"><option value="substantive">Substantive</option><option value="technical">Technical</option></select>
+                    <button type="button" class="btn btn-outline btn-small" onclick="addCustomCheckbox('sec1_err')">+ Add</button>
+                </div>
+                <div class="form-group" style="margin-top: 20px;">
+                    <label>Additional Section 1 Comments</label>
+                    <textarea id="sec1Comments"></textarea>
+                </div>
+                <div class="btn-container">
+                    <button type="button" class="btn btn-outline" onclick="document.querySelectorAll('.nav-item')[0].click()">Previous</button>
+                    <button type="button" class="btn btn-primary" onclick="document.querySelectorAll('.nav-item')[2].click()">Next Step</button>
+                </div>
+            </div>
+
+            <!-- TAB 3: Section 2 -->
+            <div id="tab-sec2" class="tab-content">
+                <h2>Section 2: Employer Verification</h2>
+                <div class="checkbox-container" id="container_sec2_err"></div>
+                <div class="add-custom-row">
+                    <input type="text" id="custom_sec2_input" placeholder="Type new error to reuse..." style="flex-grow: 1;">
+                    <select id="custom_sec2_type" style="width: 130px;"><option value="substantive">Substantive</option><option value="technical">Technical</option></select>
+                    <button type="button" class="btn btn-outline btn-small" onclick="addCustomCheckbox('sec2_err')">+ Add</button>
+                </div>
+                <div class="form-group" style="margin-top: 20px;">
+                    <label>Additional Section 2 Comments</label>
+                    <textarea id="sec2Comments"></textarea>
+                </div>
+                <div class="btn-container">
+                    <button type="button" class="btn btn-outline" onclick="document.querySelectorAll('.nav-item')[1].click()">Previous</button>
+                    <button type="button" class="btn btn-primary" onclick="document.querySelectorAll('.nav-item')[3].click()">Next Step</button>
+                </div>
+            </div>
+
+            <!-- TAB 4: Section 3 -->
+            <div id="tab-sec3" class="tab-content">
+                <h2>Section 3: Reverification & Rehires</h2>
+                <div id="reverifications-wrapper"></div>
+                <div style="margin-top: 15px; text-align: center;">
+                    <button type="button" class="btn btn-outline" onclick="addReverificationBlock()">+ Add Another Re-verification</button>
+                </div>
+                <h3 style="margin-top: 40px;">Manage Re-verification Error Types</h3>
+                <div class="add-custom-row" style="margin-top: 0;">
+                    <input type="text" id="custom_sec3_input" placeholder="Type new error to reuse..." style="flex-grow: 1;">
+                    <select id="custom_sec3_type" style="width: 130px;"><option value="substantive">Substantive</option><option value="technical">Technical</option></select>
+                    <button type="button" class="btn btn-outline btn-small" onclick="addCustomCheckbox('sec3_err')">+ Save Type</button>
+                </div>
+                <div class="btn-container">
+                    <button type="button" class="btn btn-outline" onclick="document.querySelectorAll('.nav-item')[2].click()">Previous</button>
+                    <button type="button" class="btn btn-primary" onclick="document.querySelectorAll('.nav-item')[4].click()">Next Step</button>
+                </div>
+            </div>
+
+            <!-- TAB 5: Recommendations -->
+            <div id="tab-recs" class="tab-content">
+                <div class="recs-header-row">
+                    <h2>Mapped Recommendations &amp; Resolutions</h2>
+                    <div class="recs-template-card">
+                        <p class="recs-template-label">Template library</p>
+                        <select id="global_template_select" style="padding: 8px 10px; font-size: 0.88rem;">
+                            <option value="">-- Select a saved recommendation template --</option>
+                        </select>
+                        <button type="button" class="btn btn-outline btn-small" onclick="insertGlobalTemplate()">Insert into Active Box</button>
+                    </div>
+                </div>
+
+                <p class="recs-page-intro">
+                    Recommendations below have been <strong>auto-populated</strong> based on the errors selected. Review and edit as necessary for this specific audit.
+                </p>
+
+                <div id="dynamic-recs-container"></div>
+
+                <h3 class="recs-doc-expl-heading">General Document Explanations</h3>
+                <div class="form-group">
+                    <label>Corrections completed by Employer</label>
+                    <textarea id="employeeExplanation" rows="8" style="width:100%;box-sizing:border-box;line-height:1.5;" placeholder="Describe corrections completed by the employer (dates, initials, amended entries, attached memos, etc.)." onfocus="lastFocusedTextarea = this;"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Employer Explanation / Corrective Action Memo</label>
+                    <textarea id="empExplanation" rows="10" style="width:100%;box-sizing:border-box;line-height:1.5;" placeholder="Draft overall explanation for substantive errors (e.g., 'Due to administrative oversight...')." onfocus="lastFocusedTextarea = this;"></textarea>
+                    <div style="text-align: right; margin-top: 5px;">
+                        <button type="button" class="btn btn-outline btn-small" onclick="saveAsTemplate('empExplanation')">Save this text to Template Library</button>
+                    </div>
+                </div>
+
+                <div class="btn-container">
+                    <button type="button" class="btn btn-outline" onclick="document.querySelectorAll('.nav-item')[3].click()">Previous</button>
+                    <button type="button" class="btn btn-primary" onclick="document.querySelectorAll('.nav-item')[5].click()">Review & Generate</button>
+                </div>
+            </div>
+
+            <!-- TAB 6: Report Preview -->
+            <div id="tab-report" class="tab-content" style="background: transparent; box-shadow: none; padding: 0;">
+                <div class="report-export-strip" id="reportExportStrip">
+                    <div class="export-strip-title">Report preview (demo only)</div>
+                    <div class="export-strip-hint demo-only-notice" id="exportSaveLocationHint">Walk through the workflow and preview the formatted audit note below. <strong>Word, PDF, and file downloads</strong> are available in the full HR Pro desktop application only.</div>
+                    <button type="button" class="btn btn-primary btn-export-word js-save-word" onclick="downloadReportAsWord()" disabled title="Not available in public demo">Save as Word document</button>
+                    <button type="button" class="btn btn-primary btn-export-pdf js-save-pdf" onclick="downloadReportAsPdf()" disabled title="Not available in public demo">Save as PDF</button>
+                </div>
+                <div class="report-preview-toolbar">
+                    <button type="button" class="btn btn-outline btn-small" id="btnToggleReportEdit" onclick="toggleReportEditing()">Edit report here</button>
+                </div>
+                <div class="report-preview-shell">
+                    <div id="reportPreviewEmpty" class="report-preview-empty is-visible">
+                        Your I-9 audit note preview will appear here after you click <strong>Review &amp; Generate</strong> on step 5.
+                    </div>
+                    <div id="reportPreview"></div>
+                </div>
+                <div class="btn-container" style="background: white; padding: 20px; border-radius: 8px; margin-top: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.03);">
+                    <button type="button" class="btn btn-outline" onclick="document.querySelectorAll('.nav-item')[4].click()">Back to Edit</button>
+                    <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-left: auto;">
+                        <button type="button" class="btn btn-primary js-save-word" onclick="downloadReportAsWord()" disabled title="Not available in public demo">Save as Word document</button>
+                        <button type="button" class="btn btn-primary js-save-pdf" onclick="downloadReportAsPdf()" disabled title="Not available in public demo">Save as PDF</button>
+                    </div>
+                </div>
+                <div id="reportWordSection" class="report-word-section" style="display: none;" aria-hidden="true">
+                    <p class="word-section-title">Edit existing Word file (optional)</p>
+                    <p class="word-section-hint">Re-open a saved audit note .docx to edit it here, then use <strong>Save changes to this Word file</strong>. This does not replace the I-9 report preview above.</p>
+                    <div class="word-section-actions">
+                        <button type="button" class="btn btn-outline btn-small" id="btnOpenWord" onclick="openWordInApp()">Open Word document…</button>
+                        <button type="button" class="btn btn-outline btn-small" id="btnOpenLastWord" onclick="openLastSavedWordInApp()">Open last saved Word</button>
+                        <button type="button" class="btn btn-outline btn-small js-word-update-opened" style="display: none;" onclick="saveActiveWordDocument()">Save changes to this Word file</button>
+                        <button type="button" class="btn btn-outline btn-small" id="btnToggleWordEdit" style="display: none;" onclick="toggleWordDocumentEditing()">Edit Word here</button>
+                        <button type="button" class="btn btn-outline btn-small" id="btnCloseWordDoc" style="display: none;" onclick="closeWordDocument()">Close Word file</button>
+                    </div>
+                    <div id="wordDocumentPreviewShell" class="report-word-preview-shell">
+                        <div id="wordDocumentPreview"></div>
+                    </div>
+                </div>
+            </div>
+
+        </form>
+    </div>
+
+    <script>
+        document.getElementById('auditDate').valueAsDate = new Date();
+
+        const DEMO_MODE = true;
+        const DEMO_SAVE_MESSAGE = 'Saving and downloading files is not available in the public demo. Contact HR Pro for the full desktop application.';
+
+        function blockDemoExport(silent) {
+            if (!DEMO_MODE) return false;
+            if (!silent) alert(DEMO_SAVE_MESSAGE);
+            return true;
+        }
+
+        function initDemoRestrictions() {
+            if (!DEMO_MODE) return;
+            document.querySelectorAll('.js-save-word, .js-save-pdf, .btn-export-word, .btn-export-pdf').forEach((btn) => {
+                btn.disabled = true;
+                btn.title = 'Not available in public demo';
+            });
+            document.querySelectorAll('.js-excel-export, .js-excel-import, .js-demo-settings-export').forEach((btn) => {
+                btn.disabled = true;
+                btn.title = 'Not available in public demo';
+            });
+            const filenameHint = document.getElementById('exportFilenameHint');
+            if (filenameHint) filenameHint.style.display = 'none';
+        }
+
+        // Auto-Population Dictionary
+        const autoRecMap = {
+            "Employee Signature Missing": "Employee must complete a new Form I-9, sign, and date Section 1.",
+            "Signed after Day 1": "Employer must attach a memo explaining the late completion of Section 1.",
+            "Missing Address": "Employee must cross out the incorrect/blank field, enter the correct address, initial, and date.",
+            "Missing DOB": "Employee must enter their Date of Birth, initial, and date.",
+            "Missing Employer Signature": "Employer must sign Section 2 with the current date, and attach an explanation memo.",
+            "Missing Doc Info": "Employer must review original documents, enter missing document title, number, or expiration date, initial, and date.",
+            "Missing Employee Info Header": "Employer must enter the employee's Last Name, First Name, and MI at the top of Section 2.",
+            "Missing Date of Hire": "Employer must enter the correct First Day of Employment, initial, and date.",
+            "Re-Verification Missing": "Employer must complete Section 3 immediately with current valid documentation and attach a memo explaining the late reverification.",
+            "Invalid Document": "Employer must request valid documentation, complete a new Section 2 or 3 as applicable, and attach an explanation memo.",
+            "Missing Supporting Doc Info": "Employer must enter the correct document title, number, and expiration date in Section 3, initial, and date."
+        };
+
+        // -------------------------
+        // STATE MANAGEMENT
+        // -------------------------
+        const STORE_KEY = 'i9AuditApp_v5_Data';
+        const OUTPUT_DIR_LS_KEY = 'i9audit_output_dir';
+
+        let appState = {
+            customCheckboxes: { sec1_err: [], sec2_err: [], sec3_err: [] },
+            templates: [],
+            recommendations: {}, 
+            revCount: 1
+        };
+
+        const defaultErrors = {
+            sec1_err: [
+                {val: "Employee Signature Missing", type: "substantive"},
+                {val: "Signed after Day 1", type: "substantive"},
+                {val: "Missing Address", type: "technical"},
+                {val: "Missing DOB", type: "technical"}
+            ],
+            sec2_err: [
+                {val: "Missing Employer Signature", type: "substantive"},
+                {val: "Missing Doc Info", type: "substantive"},
+                {val: "Missing Employee Info Header", type: "technical"},
+                {val: "Missing Date of Hire", type: "technical"}
+            ],
+            sec3_err: [
+                {val: "Re-Verification Missing", type: "substantive"},
+                {val: "Invalid Document", type: "substantive"},
+                {val: "Missing Supporting Doc Info", type: "technical"}
+            ]
+        };
+
+        function escapeHtmlForTextarea(s) {
+            return String(s ?? '')
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;');
+        }
+
+        function escapeHtmlAttr(s) {
+            return String(s ?? '')
+                .replace(/&/g, '&amp;')
+                .replace(/"/g, '&quot;')
+                .replace(/</g, '&lt;');
+        }
+
+        function normalizeStoredCustomCheckboxes(raw) {
+            const sections = ['sec1_err', 'sec2_err', 'sec3_err'];
+            const customCheckboxes = { sec1_err: [], sec2_err: [], sec3_err: [] };
+            const src = raw && typeof raw === 'object' ? raw : {};
+            for (const sec of sections) {
+                customCheckboxes[sec] = dedupeCustomCheckboxList(src[sec]);
+            }
+            return customCheckboxes;
+        }
+
+        function mergeCustomCheckboxLibraries(a, b) {
+            const left = normalizeStoredCustomCheckboxes(a);
+            const right = normalizeStoredCustomCheckboxes(b);
+            return {
+                sec1_err: dedupeCustomCheckboxList([...left.sec1_err, ...right.sec1_err]),
+                sec2_err: dedupeCustomCheckboxList([...left.sec2_err, ...right.sec2_err]),
+                sec3_err: dedupeCustomCheckboxList([...left.sec3_err, ...right.sec3_err]),
+            };
+        }
+
+        function mergeTemplateLibraries(a, b) {
+            const out = [];
+            const seen = new Set();
+            for (const list of [a, b]) {
+                if (!Array.isArray(list)) continue;
+                for (const t of list) {
+                    const v = String(t || '').trim();
+                    if (!v || seen.has(v)) continue;
+                    seen.add(v);
+                    out.push(v);
+                }
+            }
+            return out;
+        }
+
+        function isGeneratedAuditReportHtml(html) {
+            return html.includes('auditNoteExportHeader') || html.includes('Form I-9 Audit Note');
+        }
+
+        function updateReportPreviewEmptyState() {
+            const rp = document.getElementById('reportPreview');
+            const empty = document.getElementById('reportPreviewEmpty');
+            if (!rp || !empty) return;
+            const has = !!rp.innerHTML.trim();
+            empty.classList.toggle('is-visible', !has);
+        }
+
+        function sanitizeReportPreviewContent() {
+            const rp = document.getElementById('reportPreview');
+            if (!rp || !rp.innerHTML.trim()) {
+                updateReportPreviewEmptyState();
+                return;
+            }
+            const html = rp.innerHTML;
+            if (html.includes('word-import-root') || !isGeneratedAuditReportHtml(html)) {
+                rp.innerHTML = '';
+                resetReportEditing();
+            }
+            updateReportPreviewEmptyState();
+        }
+
+        function closeWordDocument() {
+            activeWordDocumentPath = null;
+            clearWordDocumentPanel();
+            updateActiveWordSaveUI();
+            try {
+                sessionStorage.removeItem(LAST_WORD_PATH_KEY);
+            } catch (e) { /* ignore */ }
+            initExportToolbar();
+        }
+
+        function prettifyRecKey(key) {
+            if (!key) return key;
+            const s3 = /^s3_(\d+)_(.+)$/.exec(key);
+            if (s3) return 'Section 3 (re-verification ' + s3[1] + ') — ' + s3[2];
+            const s2 = /^s2_(.+)$/.exec(key);
+            if (s2) return 'Section 2 — ' + s2[1];
+            const s1 = /^s1_(.+)$/.exec(key);
+            if (s1) return 'Section 1 — ' + s1[1];
+            return String(key).replace(/_/g, ' ');
+        }
+
+        function buildErrorsSummaryPlain() {
+            const lines = [];
+            function pushSection(title, pattern) {
+                lines.push(title);
+                const boxes = document.querySelectorAll('input[name="' + pattern + '"]:checked');
+                if (boxes.length === 0) {
+                    lines.push('  No Errors found');
+                    return;
+                }
+                boxes.forEach(function (cb) {
+                    const t = cb.getAttribute('data-type') || 'technical';
+                    lines.push('  • [' + t + '] ' + cb.value);
+                });
+            }
+            pushSection('Section 1 — errors:', 'sec1_err');
+            pushSection('Section 2 — errors:', 'sec2_err');
+            for (let i = 1; i <= appState.revCount; i++) {
+                if (!document.getElementById('rev_block_' + i)) continue;
+                pushSection('Section 3 — Re-verification ' + i + ' — errors:', 'sec3_err_' + i);
+                const notesEl = document.getElementById('sec3Comments_' + i);
+                if (notesEl && notesEl.value.trim()) {
+                    lines.push('  Re-verification ' + i + ' notes: ' + notesEl.value.trim());
+                }
+            }
+            const c1 = document.getElementById('sec1Comments');
+            if (c1 && c1.value.trim()) lines.push('Section 1 additional comments: ' + c1.value.trim());
+            const c2 = document.getElementById('sec2Comments');
+            if (c2 && c2.value.trim()) lines.push('Section 2 additional comments: ' + c2.value.trim());
+            return lines.join('\n');
+        }
+
+        function buildRecommendationsSummaryPlain() {
+            const recLines = [];
+            Object.keys(appState.recommendations || {}).sort().forEach(function (k) {
+                const v = String(appState.recommendations[k] || '').trim();
+                if (!v) return;
+                recLines.push('• ' + prettifyRecKey(k) + ': ' + v);
+            });
+            const ee = document.getElementById('employeeExplanation');
+            const emp = document.getElementById('empExplanation');
+            const eeV = ee && ee.value.trim();
+            const empV = emp && emp.value.trim();
+            const parts = [];
+            if (recLines.length) {
+                parts.push('Mapped recommendations (per error / re-verification):');
+                parts.push(recLines.join('\n'));
+            }
+            if (eeV) {
+                if (parts.length) parts.push('');
+                parts.push('Corrections completed by Employer:');
+                parts.push(eeV);
+            }
+            if (empV) {
+                if (parts.length) parts.push('');
+                parts.push('General employer / corrective-action explanation:');
+                parts.push(empV);
+            }
+            return parts.length ? parts.join('\n') : '(No mapped recommendations or general explanation at save time.)';
+        }
+
+        function buildConsolidationMeta() {
+            return {
+                employeeName: (document.getElementById('employeeName').value || '').trim() || 'Unknown employee',
+                errorsSummary: buildErrorsSummaryPlain(),
+                recommendationsSummary: buildRecommendationsSummaryPlain(),
+            };
+        }
+
+        function getPreferredOutputDir() {
+            try {
+                const v = localStorage.getItem(OUTPUT_DIR_LS_KEY);
+                return v && v.trim() ? v.trim() : '';
+            } catch (e) {
+                return '';
+            }
+        }
+
+        function setPreferredOutputDir(p) {
+            try {
+                if (p && String(p).trim()) localStorage.setItem(OUTPUT_DIR_LS_KEY, String(p).trim());
+                else localStorage.removeItem(OUTPUT_DIR_LS_KEY);
+            } catch (e) { /* ignore */ }
+        }
+
+        function refreshOutputFolderLabel() {
+            const el = document.getElementById('auditOutputFolderPath');
+            const hint = document.getElementById('exportSaveLocationHint');
+            const p = getPreferredOutputDir();
+            const label = p || '(default: Downloads)';
+            if (el) el.textContent = label;
+            if (hint) {
+                hint.textContent = p
+                    ? 'Saves in the folder set in Settings. Consolidated notes use the same folder. '
+                    : 'Saves to your Downloads folder unless you choose a folder in Settings. ';
+            }
+        }
+
+        async function chooseAuditOutputFolder() {
+            if (!window.i9audit || typeof window.i9audit.pickOutputFolder !== 'function') return;
+            try {
+                const r = await window.i9audit.pickOutputFolder();
+                if (r.canceled) return;
+                if (!r.ok) {
+                    alert(r.error || 'Could not choose folder');
+                    return;
+                }
+                setPreferredOutputDir(r.path);
+                refreshOutputFolderLabel();
+                refreshWordExportTooltips();
+            } catch (e) {
+                alert(e.message || String(e));
+            }
+        }
+
+        function resetAuditOutputFolderDownloads() {
+            setPreferredOutputDir('');
+            refreshOutputFolderLabel();
+            refreshWordExportTooltips();
+        }
+
+        async function runConsolidatedAuditNotes() {
+            if (!window.i9audit || typeof window.i9audit.consolidateAuditNotes !== 'function') {
+                alert('Consolidated export is only available in the HR Pro I-9 Audit desktop application.');
+                return;
+            }
+            const folder = getPreferredOutputDir();
+            if (!folder) {
+                if (!confirm('No custom folder is set — files in your Downloads folder will be used. Continue?')) return;
+            }
+            try {
+                const r = await window.i9audit.consolidateAuditNotes(folder || '');
+                if (!r.ok) {
+                    alert(r.error || 'Consolidation failed');
+                    return;
+                }
+                alert('Consolidated PDF created:\n\n' + r.path + '\n\nEmployees included: ' + r.count);
+            } catch (e) {
+                alert(e.message || String(e));
+            }
+        }
+
+        function initOutputFolderPanel() {
+            const panel = document.getElementById('outputFolderPanel');
+            const isDesktop = window.i9audit && typeof window.i9audit.pickOutputFolder === 'function';
+            if (panel) panel.style.display = isDesktop ? 'block' : 'none';
+            if (!isDesktop) return;
+
+            refreshOutputFolderLabel();
+
+            const chooseBtn = document.getElementById('btnChooseAuditFolder');
+            const resetBtn = document.getElementById('btnResetAuditFolderDownloads');
+            const consolidateBtn = document.getElementById('btnConsolidateAuditNotes');
+
+            if (chooseBtn && !chooseBtn._i9Bound) {
+                chooseBtn._i9Bound = true;
+                chooseBtn.addEventListener('click', () => chooseAuditOutputFolder());
+            }
+            if (resetBtn && !resetBtn._i9Bound) {
+                resetBtn._i9Bound = true;
+                resetBtn.addEventListener('click', () => resetAuditOutputFolderDownloads());
+            }
+            if (consolidateBtn && !consolidateBtn._i9Bound) {
+                consolidateBtn._i9Bound = true;
+                consolidateBtn.addEventListener('click', () => runConsolidatedAuditNotes());
+            }
+        }
+
+        let lastFocusedTextarea = null;
+        let reportEditingOn = false;
+        let wordDocumentEditingOn = false;
+        let activeWordDocumentPath = null;
+        const LAST_WORD_PATH_KEY = 'i9_last_word_path';
+
+        function resetReportEditing() {
+            reportEditingOn = false;
+            const rp = document.getElementById('reportPreview');
+            if (!rp) return;
+            rp.contentEditable = 'false';
+            rp.classList.remove('report-editing');
+            const btn = document.getElementById('btnToggleReportEdit');
+            if (btn) btn.textContent = 'Edit report here';
+        }
+
+        function resetWordDocumentEditing() {
+            wordDocumentEditingOn = false;
+            const wp = document.getElementById('wordDocumentPreview');
+            if (!wp) return;
+            wp.contentEditable = 'false';
+            wp.classList.remove('report-editing');
+            const btn = document.getElementById('btnToggleWordEdit');
+            if (btn) btn.textContent = 'Edit Word here';
+        }
+
+        function clearWordDocumentPanel() {
+            const wp = document.getElementById('wordDocumentPreview');
+            const shell = document.getElementById('wordDocumentPreviewShell');
+            if (wp) wp.innerHTML = '';
+            if (shell) shell.classList.remove('is-visible');
+            resetWordDocumentEditing();
+            const editBtn = document.getElementById('btnToggleWordEdit');
+            if (editBtn) editBtn.style.display = 'none';
+            const closeBtn = document.getElementById('btnCloseWordDoc');
+            if (closeBtn) closeBtn.style.display = 'none';
+        }
+
+        function toggleReportEditing() {
+            const rp = document.getElementById('reportPreview');
+            if (!rp || !rp.innerHTML.trim()) {
+                alert('Generate a report first (step 6).');
+                return;
+            }
+            reportEditingOn = !reportEditingOn;
+            rp.contentEditable = reportEditingOn ? 'true' : 'false';
+            rp.classList.toggle('report-editing', reportEditingOn);
+            const btn = document.getElementById('btnToggleReportEdit');
+            if (btn) btn.textContent = reportEditingOn ? 'Stop editing' : 'Edit report here';
+        }
+
+        function toggleWordDocumentEditing() {
+            const wp = document.getElementById('wordDocumentPreview');
+            if (!wp || !wp.innerHTML.trim()) {
+                alert('Open a Word document first.');
+                return;
+            }
+            wordDocumentEditingOn = !wordDocumentEditingOn;
+            wp.contentEditable = wordDocumentEditingOn ? 'true' : 'false';
+            wp.classList.toggle('report-editing', wordDocumentEditingOn);
+            const btn = document.getElementById('btnToggleWordEdit');
+            if (btn) btn.textContent = wordDocumentEditingOn ? 'Stop editing Word' : 'Edit Word here';
+        }
+
+        function enableReportEditing() {
+            const rp = document.getElementById('reportPreview');
+            if (!rp || !rp.innerHTML.trim()) return;
+            reportEditingOn = true;
+            rp.contentEditable = 'true';
+            rp.classList.add('report-editing');
+            const btn = document.getElementById('btnToggleReportEdit');
+            if (btn) btn.textContent = 'Stop editing';
+        }
+
+        function updateActiveWordSaveUI() {
+            const has = !!activeWordDocumentPath;
+            const shell = document.getElementById('wordDocumentPreviewShell');
+            const wordVisible = shell && shell.classList.contains('is-visible');
+            document.querySelectorAll('.js-word-update-opened').forEach((el) => {
+                el.style.display = has ? 'inline-flex' : 'none';
+            });
+            const editBtn = document.getElementById('btnToggleWordEdit');
+            if (editBtn) editBtn.style.display = has ? 'inline-flex' : 'none';
+            const closeBtn = document.getElementById('btnCloseWordDoc');
+            if (closeBtn) closeBtn.style.display = wordVisible ? 'inline-flex' : 'none';
+        }
+
+        function getAuditNoteFileStem() {
+            const raw = (document.getElementById('employeeName').value || '').trim();
+            const cleaned = raw.replace(/[/\\?%*:|"<>#\n\r\t]/g, '').replace(/\s{2,}/g, ' ').trim();
+            const name = cleaned || 'Employee';
+            return name + '_Audit Note';
+        }
+
+        function updateExportFilenameHint() {
+            const el = document.getElementById('exportFilenameHint');
+            if (el) el.textContent = getAuditNoteFileStem();
+        }
+
+        function compactExcelHeader(k) {
+            return String(k ?? '')
+                .trim()
+                .toLowerCase()
+                .replace(/[^a-z0-9]/g, '');
+        }
+
+        function normalizeExcelImportRow(raw) {
+            if (!raw || typeof raw !== 'object') return null;
+            const byCompact = {};
+            Object.keys(raw).forEach((k) => {
+                byCompact[compactExcelHeader(k)] = raw[k];
+            });
+            const cell = (compactKey) => {
+                const x = byCompact[compactKey];
+                return x === undefined || x === null ? '' : x;
+            };
+            const sec = String(cell('section'));
+            const err = String(cell('error')).trim();
+            let rowKey = String(cell('rowkey')).trim();
+            if (!rowKey && err) {
+                const sl = sec.toLowerCase();
+                if (sl.includes('section 1')) rowKey = 's1_' + err;
+                else if (sl.includes('section 2')) rowKey = 's2_' + err;
+                else if (sl.includes('section 3')) {
+                    const m = /re-verification\s*(\d+)/i.exec(sec);
+                    if (m) rowKey = 's3_' + m[1] + '_' + err;
+                }
+            }
+            return {
+                Section: sec,
+                Error: err,
+                Type: String(cell('type')),
+                Selected: cell('selected'),
+                Recommendation: String(cell('recommendation')),
+                RowKey: rowKey,
+            };
+        }
+
+        function parseExcelSelectedCell(val) {
+            if (val === true || val === 1) return true;
+            if (val === false || val === 0) return false;
+            const t = String(val ?? '').trim().toLowerCase();
+            if (t === 'y' || t === 'yes' || t === 'true' || t === '1' || t === 'x') return true;
+            if (t === 'n' || t === 'no' || t === 'false' || t === '0') return false;
+            return false;
+        }
+
+        function findCheckboxByNameValue(nameAttr, value) {
+            const nodes = document.querySelectorAll('input[type="checkbox"][name="' + nameAttr + '"]');
+            for (let i = 0; i < nodes.length; i++) {
+                if (nodes[i].value === value) return nodes[i];
+            }
+            return null;
+        }
+
+        function parseRowKeyForExcelImport(rk) {
+            const k = String(rk || '').trim();
+            let m = /^s1_(.+)$/.exec(k);
+            if (m) return { inputName: 'sec1_err', errVal: m[1] };
+            m = /^s2_(.+)$/.exec(k);
+            if (m) return { inputName: 'sec2_err', errVal: m[1] };
+            m = /^s3_(\d+)_(.+)$/.exec(k);
+            if (m) return { inputName: 'sec3_err_' + m[1], errVal: m[2] };
+            return null;
+        }
+
+        function buildExcelExportRows() {
+            const rows = [];
+            function addRows(sectionLabel, listKey, inputName, keyPrefix) {
+                getCombinedErrors(listKey).forEach((item) => {
+                    const rk = keyPrefix + '_' + item.val;
+                    const cb = findCheckboxByNameValue(inputName, item.val);
+                    const selected = cb && cb.checked ? 'Y' : 'N';
+                    let rec = appState.recommendations[rk];
+                    if (rec === undefined || rec === null) rec = autoRecMap[item.val] || '';
+                    rows.push({
+                        Section: sectionLabel,
+                        Error: item.val,
+                        Type: item.type,
+                        Selected: selected,
+                        Recommendation: String(rec),
+                        RowKey: rk,
+                    });
+                });
+            }
+            addRows('Section 1', 'sec1_err', 'sec1_err', 's1');
+            addRows('Section 2', 'sec2_err', 'sec2_err', 's2');
+            for (let i = 1; i <= appState.revCount; i++) {
+                if (!document.getElementById('rev_block_' + i)) continue;
+                addRows('Section 3 (Re-verification ' + i + ')', 'sec3_err', 'sec3_err_' + i, 's3_' + i);
+            }
+            return rows;
+        }
+
+        function applyExcelImportRows(rawRows) {
+            if (!Array.isArray(rawRows) || rawRows.length === 0) {
+                alert('The spreadsheet had no data rows.');
+                return { applied: 0, skipped: [] };
+            }
+            const skipped = [];
+            let applied = 0;
+            for (let i = 0; i < rawRows.length; i++) {
+                const row = normalizeExcelImportRow(rawRows[i]);
+                if (!row) continue;
+                if (String(row.Section).trim() === 'Section' && String(row.Error).trim() === 'Error') continue;
+                const rk = (row.RowKey || '').trim();
+                if (!rk) {
+                    if (row.Error) skipped.push(row.Error + ' (no RowKey)');
+                    continue;
+                }
+                const parsed = parseRowKeyForExcelImport(rk);
+                if (!parsed) {
+                    skipped.push(rk);
+                    continue;
+                }
+                if (parsed.inputName.indexOf('sec3_err_') === 0) {
+                    const rev = parsed.inputName.slice('sec3_err_'.length);
+                    if (!document.getElementById('rev_block_' + rev)) {
+                        skipped.push(rk);
+                        continue;
+                    }
+                }
+                const cb = findCheckboxByNameValue(parsed.inputName, parsed.errVal);
+                if (!cb) {
+                    skipped.push(rk);
+                    continue;
+                }
+                cb.checked = parseExcelSelectedCell(row.Selected);
+                appState.recommendations[rk] = row.Recommendation == null ? '' : String(row.Recommendation);
+                applied++;
+            }
+            buildRecommendationsTab();
+            return { applied, skipped };
+        }
+
+        async function exportErrorsRecommendationsExcel() {
+            if (blockDemoExport()) return;
+            const rows = buildExcelExportRows();
+            if (rows.length === 0) {
+                alert('No error types to export.');
+                return;
+            }
+            const stem = getAuditNoteFileStem() + '_Errors';
+            if (window.i9audit && typeof window.i9audit.saveExcelAudit === 'function') {
+                try {
+                    const res = await window.i9audit.saveExcelAudit(rows, stem, {
+                        outputDir: getPreferredOutputDir() || undefined,
+                    });
+                    if (!res.ok) {
+                        alert('Could not save Excel file: ' + (res.error || 'Unknown error'));
+                        return;
+                    }
+                    alert('Saved Excel workbook:\n' + (res.path || ''));
+                } catch (e) {
+                    alert('Could not save Excel: ' + (e.message || String(e)));
+                }
+                return;
+            }
+            if (typeof XLSX === 'undefined') {
+                alert('Excel export needs the SheetJS script (internet) or the HR Pro I-9 Audit desktop app.');
+                return;
+            }
+            try {
+                const headers = ['Section', 'Error', 'Type', 'Selected', 'Recommendation', 'RowKey'];
+                const aoa = [headers, ...rows.map((r) => headers.map((h) => (r[h] == null ? '' : String(r[h]))))];
+                const ws = XLSX.utils.aoa_to_sheet(aoa);
+                ws['!cols'] = [{ wch: 30 }, { wch: 46 }, { wch: 12 }, { wch: 10 }, { wch: 76 }, { wch: 52 }];
+                const wb = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(wb, ws, 'Errors and recommendations');
+                XLSX.writeFile(wb, stem + '.xlsx');
+                alert('Downloaded "' + stem + '.xlsx". Use the desktop app to save directly to your chosen folder from Settings.');
+            } catch (e) {
+                alert('Could not create Excel file: ' + (e.message || String(e)));
+            }
+        }
+
+        function initExcelImportFileInput() {
+            const hid = document.getElementById('excelImportHidden');
+            if (!hid || hid._i9ExcelBound) return;
+            hid._i9ExcelBound = true;
+            hid.addEventListener('change', async () => {
+                const f = hid.files && hid.files[0];
+                hid.value = '';
+                if (!f) return;
+                if (typeof XLSX === 'undefined') {
+                    alert('SheetJS (xlsx) is not loaded. Check your internet connection.');
+                    return;
+                }
+                try {
+                    const buf = await f.arrayBuffer();
+                    const wb = XLSX.read(new Uint8Array(buf), { type: 'array' });
+                    const sn = wb.SheetNames[0];
+                    if (!sn) {
+                        alert('Workbook has no sheets.');
+                        return;
+                    }
+                    const rows = XLSX.utils.sheet_to_json(wb.Sheets[sn], { defval: '' });
+                    const { applied, skipped } = applyExcelImportRows(rows);
+                    let msg = 'Updated ' + applied + ' row(s) from Excel.';
+                    if (skipped.length) {
+                        msg += '\n\nCould not apply (' + skipped.length + '): ' + skipped.slice(0, 10).join('; ');
+                        if (skipped.length > 10) msg += '…';
+                    }
+                    alert(msg);
+                } catch (e) {
+                    alert('Could not import Excel: ' + (e.message || String(e)));
+                }
+            });
+        }
+
+        async function importErrorsRecommendationsExcel() {
+            if (blockDemoExport()) return;
+            if (window.i9audit && typeof window.i9audit.readExcelAudit === 'function') {
+                try {
+                    const res = await window.i9audit.readExcelAudit();
+                    if (res.canceled) return;
+                    if (!res.ok) {
+                        alert('Could not read Excel file: ' + (res.error || 'Unknown error'));
+                        return;
+                    }
+                    const { applied, skipped } = applyExcelImportRows(res.rows || []);
+                    let msg = 'Updated ' + applied + ' row(s) from Excel.';
+                    if (skipped.length) {
+                        msg += '\n\nCould not apply (' + skipped.length + '): ' + skipped.slice(0, 10).join('; ');
+                        if (skipped.length > 10) msg += '…';
+                    }
+                    alert(msg);
+                } catch (e) {
+                    alert('Could not import Excel: ' + (e.message || String(e)));
+                }
+                return;
+            }
+            initExcelImportFileInput();
+            const hid = document.getElementById('excelImportHidden');
+            if (hid) hid.click();
+        }
+
+        function downloadReportAsWordBrowserFallback() {
+            if (blockDemoExport()) return;
+            const rp = document.getElementById('reportPreview');
+            if (!rp || !rp.innerHTML.trim()) return;
+            const stem = getAuditNoteFileStem();
+            const inner = rp.innerHTML;
+            const doc =
+                '<!DOCTYPE html><html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word"><head><meta charset="utf-8"><title>Audit Note</title></head><body style="font-family:Calibri,Arial,sans-serif;font-size:11pt;">' +
+                inner +
+                '</body></html>';
+            const blob = new Blob([doc], { type: 'application/msword' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = stem + '.doc';
+            a.rel = 'noopener';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(a.href);
+                    alert(
+                        'Downloaded "' +
+                            stem +
+                            '.doc". Open it in Microsoft Word.\n\nFor a true .docx saved to your Downloads folder, use the HR Pro I-9 Audit desktop application.'
+                    );
+            returnToAuditDetailsTab();
+        }
+
+        function refreshWordExportTooltips() {
+            if (DEMO_MODE) return;
+            const stem = getAuditNoteFileStem();
+            const hasElectron = window.i9audit && typeof window.i9audit.saveWordToDownloads === 'function';
+            document.querySelectorAll('.js-save-word').forEach((btn) => {
+                btn.disabled = false;
+                btn.title = hasElectron
+                    ? 'Saves ' + stem + '.docx to your Downloads folder.'
+                    : 'Downloads ' + stem + '.doc (Word-readable). Desktop app saves .docx to Downloads.';
+            });
+        }
+
+        async function downloadReportAsWord() {
+            if (blockDemoExport()) return;
+            const rp = document.getElementById('reportPreview');
+            if (!rp || !rp.innerHTML.trim()) {
+                alert('Generate a report first (step 6).');
+                return;
+            }
+            const stem = getAuditNoteFileStem();
+            if (window.i9audit && typeof window.i9audit.saveWordToDownloads === 'function') {
+                try {
+                    const saveOpts = {
+                        outputDir: getPreferredOutputDir() || undefined,
+                        consolidationMeta: buildConsolidationMeta(),
+                    };
+                    const res = await window.i9audit.saveWordToDownloads(rp.innerHTML, stem, saveOpts);
+                    if (!res.ok) {
+                        alert('Could not save Word file: ' + (res.error || 'Unknown error'));
+                        return;
+                    }
+                    try {
+                        sessionStorage.setItem(LAST_WORD_PATH_KEY, res.path);
+                    } catch (e) { /* ignore */ }
+                    activeWordDocumentPath = res.path;
+                    updateActiveWordSaveUI();
+                    enableReportEditing();
+                    initExportToolbar();
+                    alert(
+                        'Saved Word document:\n' +
+                            (res.path || '') +
+                            '\n\nUse Refresh on Audit Details when you are ready for the next employee.'
+                    );
+                    returnToAuditDetailsTab();
+                } catch (e) {
+                    alert('Could not save Word file: ' + (e.message || String(e)));
+                }
+                return;
+            }
+            downloadReportAsWordBrowserFallback();
+        }
+
+        async function waitForReportPreviewPaint() {
+            await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
+            await new Promise((r) => setTimeout(r, 100));
+        }
+
+        async function downloadReportAsPdf(options) {
+            if (blockDemoExport((options || {}).silentFailures)) return false;
+            const opts = options || {};
+            const rp = document.getElementById('reportPreview');
+            if (!rp || !rp.innerHTML.trim()) {
+                if (!opts.silentFailures) {
+                    alert('Generate a report first (step 6), or open a Word document.');
+                }
+                return false;
+            }
+            const stem = getAuditNoteFileStem();
+            const htmlBody = rp.innerHTML;
+
+            if (window.i9audit && typeof window.i9audit.savePdfToDownloads === 'function') {
+                try {
+                    const saveOpts = {
+                        outputDir: getPreferredOutputDir() || undefined,
+                        consolidationMeta: buildConsolidationMeta(),
+                        htmlBody: htmlBody,
+                    };
+                    const res = await window.i9audit.savePdfToDownloads(stem, saveOpts);
+                    if (!res.ok) {
+                        if (!opts.silentFailures) {
+                            alert('Could not save PDF: ' + (res.error || 'Unknown error'));
+                        }
+                        return false;
+                    }
+                    if (typeof opts.onSuccess === 'function') {
+                        opts.onSuccess(res.path || '');
+                    } else if (opts.successMessage) {
+                        alert(opts.successMessage.replace('{path}', res.path || ''));
+                    } else if (!opts.silentSuccess) {
+                        alert('Saved PDF:\n' + (res.path || '') + '\n\nUse Refresh on Audit Details when you are ready for the next employee.');
+                    }
+                    if (!opts.skipReturnTab) returnToAuditDetailsTab();
+                    return true;
+                } catch (e) {
+                    if (!opts.silentFailures) {
+                        alert('Could not save PDF: ' + (e.message || String(e)));
+                    }
+                    return false;
+                }
+            }
+
+            if (typeof html2pdf === 'undefined') {
+                if (!opts.silentFailures) {
+                    alert('PDF in the browser needs the html2pdf script (check your internet connection), or use the desktop app.');
+                }
+                return false;
+            }
+            document.body.classList.add('pdf-export-mode');
+            await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
+            try {
+                const opt = {
+                    margin: [10, 10, 10, 10],
+                    filename: stem + '.pdf',
+                    image: { type: 'jpeg', quality: 0.95 },
+                    html2canvas: { scale: 2, useCORS: true },
+                    jsPDF: { unit: 'mm', format: 'letter', orientation: 'portrait' },
+                };
+                await html2pdf().set(opt).from(rp).save();
+                if (typeof opts.onSuccess === 'function') {
+                    opts.onSuccess(stem + '.pdf');
+                } else if (opts.successMessage) {
+                    alert(opts.successMessage.replace('{path}', stem + '.pdf'));
+                }
+                if (!opts.skipReturnTab) returnToAuditDetailsTab();
+                return true;
+            } catch (e) {
+                if (!opts.silentFailures) {
+                    alert('Could not create PDF: ' + (e.message || String(e)));
+                }
+                return false;
+            } finally {
+                document.body.classList.remove('pdf-export-mode');
+            }
+        }
+
+        function getActiveWordDocumentHtml() {
+            const wp = document.getElementById('wordDocumentPreview');
+            const root = wp && wp.querySelector('.word-import-root');
+            if (root && root.innerHTML.trim()) return root.innerHTML;
+            if (wp && wp.innerHTML.trim()) return wp.innerHTML;
+            const rp = document.getElementById('reportPreview');
+            if (rp && rp.innerHTML.trim()) return rp.innerHTML;
+            return '';
+        }
+
+        async function saveActiveWordDocument() {
+            if (!activeWordDocumentPath) {
+                alert('Open or save a Word document first.');
+                return;
+            }
+            const inner = getActiveWordDocumentHtml();
+            if (!inner.trim()) {
+                alert('Nothing to save.');
+                return;
+            }
+            if (!window.i9audit || typeof window.i9audit.saveWordAtPath !== 'function') {
+                alert('This action requires the HR Pro I-9 Audit desktop application.');
+                return;
+            }
+            try {
+                const res = await window.i9audit.saveWordAtPath(inner, activeWordDocumentPath);
+                if (!res.ok) {
+                    alert('Could not update Word file: ' + (res.error || 'Unknown error'));
+                    return;
+                }
+                alert('Updated Word file:\n' + (res.path || ''));
+            } catch (e) {
+                alert('Could not update Word file: ' + (e.message || String(e)));
+            }
+        }
+
+        async function openLastSavedWordInApp() {
+            let p = '';
+            try {
+                p = sessionStorage.getItem(LAST_WORD_PATH_KEY) || '';
+            } catch (e) { /* ignore */ }
+            if (!p.trim()) {
+                alert('Use "Save as Word" first, then you can open that file from here.');
+                return;
+            }
+            await openWordInApp(p.trim());
+        }
+
+        async function openWordInApp(filePathOptional) {
+            if (!window.i9audit || typeof window.i9audit.openWordDocument !== 'function') {
+                alert('Open Word is only available in the HR Pro I-9 Audit desktop application.');
+                return;
+            }
+            try {
+                const res = await window.i9audit.openWordDocument(filePathOptional || '');
+                if (res.canceled) return;
+                if (!res.ok) {
+                    alert('Could not open file: ' + (res.error || 'Unknown error'));
+                    return;
+                }
+                sanitizeReportPreviewContent();
+                const wp = document.getElementById('wordDocumentPreview');
+                const shell = document.getElementById('wordDocumentPreviewShell');
+                if (wp) {
+                    wp.innerHTML = '<div class="word-import-root">' + (res.html || '<p>(Empty)</p>') + '</div>';
+                }
+                if (shell) shell.classList.add('is-visible');
+                resetWordDocumentEditing();
+                activeWordDocumentPath = res.path || null;
+                updateActiveWordSaveUI();
+                openTab('tab-report', null);
+                initExportToolbar();
+            } catch (e) {
+                alert('Could not open file: ' + (e.message || String(e)));
+            }
+        }
+
+        function initExportToolbar() {
+            initOutputFolderPanel();
+            if (DEMO_MODE) {
+                initDemoRestrictions();
+                return;
+            }
+            refreshWordExportTooltips();
+            updateExportFilenameHint();
+            const ow = document.getElementById('btnOpenWord');
+            if (ow) {
+                const canOpen = window.i9audit && typeof window.i9audit.openWordDocument === 'function';
+                ow.disabled = !canOpen;
+                ow.title = canOpen
+                    ? 'Choose a .docx (defaults to Downloads).'
+                    : 'Open Word is only available in the desktop app.';
+            }
+            const bl = document.getElementById('btnOpenLastWord');
+            if (bl) {
+                const canOpen = window.i9audit && typeof window.i9audit.openWordDocument === 'function';
+                let last = '';
+                try {
+                    last = sessionStorage.getItem(LAST_WORD_PATH_KEY) || '';
+                } catch (e) { /* ignore */ }
+                bl.disabled = !canOpen || !last.trim();
+                bl.title = last ? 'Opens: ' + last : 'Save as Word first to remember the last file path.';
+            }
+            document.querySelectorAll('.js-save-pdf').forEach((btn) => {
+                btn.title = window.i9audit && typeof window.i9audit.savePdfToDownloads === 'function'
+                    ? 'Saves to Downloads: ' + getAuditNoteFileStem() + '.pdf'
+                    : 'Saves PDF in the browser as ' + getAuditNoteFileStem() + '.pdf';
+            });
+            const stemX = getAuditNoteFileStem() + '_Errors.xlsx';
+            const hasExcel = window.i9audit && typeof window.i9audit.saveExcelAudit === 'function';
+            document.querySelectorAll('.js-excel-export').forEach((btn) => {
+                btn.title = hasExcel
+                    ? 'Saves ' + stemX + ' to your output folder (Settings) or Downloads.'
+                    : 'Downloads ' + stemX + ' in the browser (needs SheetJS). Desktop app saves to your folder.';
+            });
+            document.querySelectorAll('.js-excel-import').forEach((btn) => {
+                btn.title = hasExcel
+                    ? 'Choose an .xlsx from this app to update Selected and Recommendation in the audit.'
+                    : 'Pick an .xlsx (exported from this app) to merge changes into the form.';
+            });
+            updateActiveWordSaveUI();
+        }
+
+        window.downloadReportAsWord = downloadReportAsWord;
+        window.downloadReportAsPdf = downloadReportAsPdf;
+        window.openWordInApp = openWordInApp;
+        window.openLastSavedWordInApp = openLastSavedWordInApp;
+        window.saveActiveWordDocument = saveActiveWordDocument;
+        window.closeWordDocument = closeWordDocument;
+
+        function loadState() {
+            const saved = localStorage.getItem(STORE_KEY);
+            if(saved) {
+                try { 
+                    let parsed = JSON.parse(saved); 
+                    appState.customCheckboxes = normalizeStoredCustomCheckboxes(parsed.customCheckboxes);
+                    appState.templates = parsed.templates || appState.templates;
+                    applyPersistedAdminFields(parsed.persistedAdmin);
+                } catch(e) { console.error(e); }
+            }
+            
+            renderStaticSectionCheckboxes('sec1_err');
+            renderStaticSectionCheckboxes('sec2_err');
+            document.getElementById('reverifications-wrapper').innerHTML = '';
+            appState.revCount = 0;
+            addReverificationBlock();
+            updateTemplateDropdown();
+            sanitizeReportPreviewContent();
+            clearWordDocumentPanel();
+            activeWordDocumentPath = null;
+            updateActiveWordSaveUI();
+            saveState();
+        }
+
+        async function mergePersistedLibraryFromDisk() {
+            if (!window.i9audit || typeof window.i9audit.readPersistedLibrary !== 'function') return;
+            try {
+                const res = await window.i9audit.readPersistedLibrary();
+                if (!res.ok || !res.json) return;
+                const data = parseLibraryJsonText(res.json);
+                appState.customCheckboxes = mergeCustomCheckboxLibraries(appState.customCheckboxes, data.customCheckboxes);
+                appState.templates = mergeTemplateLibraries(appState.templates, data.templates);
+                if (data.persistedAdmin) applyPersistedAdminFields(data.persistedAdmin);
+                renderStaticSectionCheckboxes('sec1_err');
+                renderStaticSectionCheckboxes('sec2_err');
+                for (let i = 1; i <= appState.revCount; i++) {
+                    if (document.getElementById('rev_block_' + i)) renderSec3Checkboxes(i);
+                }
+                updateTemplateDropdown();
+                saveState();
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        async function persistLibraryToDisk() {
+            if (!window.i9audit || typeof window.i9audit.writePersistedLibrary !== 'function') return;
+            try {
+                await window.i9audit.writePersistedLibrary({
+                    json: JSON.stringify(buildLibraryExportPayload(), null, 2),
+                });
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        function readPersistedAdminFields() {
+            const dep = document.getElementById('department');
+            const aud = document.getElementById('auditorName');
+            return {
+                department: dep ? dep.value : '',
+                auditorName: aud ? aud.value : '',
+            };
+        }
+
+        function applyPersistedAdminFields(data) {
+            if (!data || typeof data !== 'object') return;
+            const dep = document.getElementById('department');
+            const aud = document.getElementById('auditorName');
+            if (dep && data.department != null) dep.value = String(data.department);
+            if (aud && data.auditorName != null) aud.value = String(data.auditorName);
+        }
+
+        function saveState() {
+            appState.customCheckboxes = normalizeStoredCustomCheckboxes(appState.customCheckboxes);
+            let toSave = {
+                customCheckboxes: appState.customCheckboxes,
+                templates: appState.templates,
+                persistedAdmin: readPersistedAdminFields(),
+            };
+            localStorage.setItem(STORE_KEY, JSON.stringify(toSave));
+            persistLibraryToDisk();
+        }
+
+        // -------------------------
+        // ERROR LIBRARY EXPORT / IMPORT (JSON)
+        // -------------------------
+        function dedupeCustomCheckboxList(arr) {
+            const seen = new Set();
+            const out = [];
+            if (!Array.isArray(arr)) return out;
+            for (const item of arr) {
+                if (!item || typeof item !== 'object') continue;
+                const v = String(item.val || '').trim();
+                if (!v) continue;
+                const type = item.type === 'substantive' ? 'substantive' : 'technical';
+                if (seen.has(v)) continue;
+                seen.add(v);
+                out.push({ val: v, type });
+            }
+            return out;
+        }
+
+        function normalizeLibraryPayload(raw) {
+            const customCheckboxes = normalizeStoredCustomCheckboxes(raw.customCheckboxes);
+            const templates = Array.isArray(raw.templates)
+                ? raw.templates.map((t) => String(t || '').trim()).filter(Boolean)
+                : [];
+            const seenT = new Set();
+            const uniqueT = [];
+            for (const t of templates) {
+                if (seenT.has(t)) continue;
+                seenT.add(t);
+                uniqueT.push(t);
+            }
+            let persistedAdmin;
+            if (raw.persistedAdmin && typeof raw.persistedAdmin === 'object') {
+                persistedAdmin = {
+                    department: raw.persistedAdmin.department != null ? String(raw.persistedAdmin.department) : '',
+                    auditorName: raw.persistedAdmin.auditorName != null ? String(raw.persistedAdmin.auditorName) : '',
+                };
+            }
+            return { customCheckboxes, templates: uniqueT, persistedAdmin };
+        }
+
+        function parseLibraryJsonText(text) {
+            let raw;
+            try {
+                raw = JSON.parse(String(text || '').trim());
+            } catch (e) {
+                throw new Error('Invalid JSON: ' + (e.message || 'parse error'));
+            }
+            if (!raw || typeof raw !== 'object') throw new Error('File is empty or not a JSON object.');
+            if (raw.format === 'hr-pro-i9-audit-library' && (raw.version === 1 || raw.version == null)) {
+                return normalizeLibraryPayload(raw);
+            }
+            if (raw.customCheckboxes && typeof raw.customCheckboxes === 'object') {
+                return normalizeLibraryPayload({
+                    customCheckboxes: raw.customCheckboxes,
+                    templates: raw.templates,
+                    persistedAdmin: raw.persistedAdmin,
+                });
+            }
+            throw new Error('Not a recognized HR Pro library file (expected format hr-pro-i9-audit-library or customCheckboxes).');
+        }
+
+        function buildLibraryExportPayload() {
+            return {
+                format: 'hr-pro-i9-audit-library',
+                version: 1,
+                exportedAt: new Date().toISOString(),
+                customCheckboxes: {
+                    sec1_err: dedupeCustomCheckboxList(appState.customCheckboxes.sec1_err || []),
+                    sec2_err: dedupeCustomCheckboxList(appState.customCheckboxes.sec2_err || []),
+                    sec3_err: dedupeCustomCheckboxList(appState.customCheckboxes.sec3_err || []),
+                },
+                templates: Array.isArray(appState.templates) ? [...appState.templates] : [],
+                persistedAdmin: readPersistedAdminFields(),
+            };
+        }
+
+        function applyImportedLibrary(data) {
+            appState.customCheckboxes = data.customCheckboxes;
+            appState.templates = data.templates;
+            if (data.persistedAdmin) applyPersistedAdminFields(data.persistedAdmin);
+            saveState();
+            renderStaticSectionCheckboxes('sec1_err');
+            renderStaticSectionCheckboxes('sec2_err');
+            for (let i = 1; i <= appState.revCount; i++) {
+                if (document.getElementById(`rev_block_${i}`)) renderSec3Checkboxes(i);
+            }
+            updateTemplateDropdown();
+        }
+
+        async function exportLibraryJson() {
+            if (blockDemoExport()) return;
+            const payload = buildLibraryExportPayload();
+            const json = JSON.stringify(payload, null, 2);
+            const fileStem = 'HR_Pro_I9_Audit_Error_Library';
+            if (window.i9audit && typeof window.i9audit.saveLibraryJson === 'function') {
+                try {
+                    const res = await window.i9audit.saveLibraryJson({
+                        json,
+                        fileStem,
+                        outputDir: getPreferredOutputDir() || undefined,
+                    });
+                    if (!res.ok) {
+                        alert('Could not save library file: ' + (res.error || 'Unknown error'));
+                        return;
+                    }
+                    alert('Saved library file:\n' + (res.path || ''));
+                } catch (e) {
+                    alert('Could not save library file: ' + (e.message || String(e)));
+                }
+                return;
+            }
+            try {
+                const blob = new Blob([json], { type: 'application/json;charset=utf-8' });
+                const a = document.createElement('a');
+                a.href = URL.createObjectURL(blob);
+                a.download = fileStem + '.json';
+                a.rel = 'noopener';
+                document.body.appendChild(a);
+                a.click();
+                URL.revokeObjectURL(a.href);
+                a.remove();
+                alert('Downloaded "' + fileStem + '.json". Copy it to another computer and use Import library from JSON.');
+            } catch (e) {
+                alert('Could not export library: ' + (e.message || String(e)));
+            }
+        }
+
+        function initLibraryImportFileInput() {
+            const hid = document.getElementById('libraryImportHidden');
+            if (!hid || hid._i9LibBound) return;
+            hid._i9LibBound = true;
+            hid.addEventListener('change', () => {
+                const f = hid.files && hid.files[0];
+                hid.value = '';
+                if (!f) return;
+                const reader = new FileReader();
+                reader.onload = () => {
+                    try {
+                        const data = parseLibraryJsonText(String(reader.result || ''));
+                        if (!confirm('Replace custom error types and templates on this computer with the contents of this file? (Built-in errors are not changed.)')) return;
+                        applyImportedLibrary(data);
+                        alert('Library imported. Check Sections 1–3 for new checkboxes and step 5 for templates.');
+                    } catch (e) {
+                        alert('Could not import library: ' + (e.message || String(e)));
+                    }
+                };
+                reader.onerror = () => alert('Could not read file.');
+                reader.readAsText(f, 'utf-8');
+            });
+        }
+
+        async function importLibraryJson() {
+            if (blockDemoExport()) return;
+            if (window.i9audit && typeof window.i9audit.readLibraryJson === 'function') {
+                try {
+                    const res = await window.i9audit.readLibraryJson();
+                    if (res.canceled) return;
+                    if (!res.ok) {
+                        alert('Could not read library file: ' + (res.error || 'Unknown error'));
+                        return;
+                    }
+                    const data = parseLibraryJsonText(res.json || '');
+                    if (!confirm('Replace custom error types and templates on this computer with the contents of this file? (Built-in errors are not changed.)')) return;
+                    applyImportedLibrary(data);
+                    alert('Library imported. Check Sections 1–3 for new checkboxes and step 5 for templates.');
+                } catch (e) {
+                    alert('Could not import library: ' + (e.message || String(e)));
+                }
+                return;
+            }
+            initLibraryImportFileInput();
+            const hid = document.getElementById('libraryImportHidden');
+            if (hid) hid.click();
+        }
+
+        // -------------------------
+        // UI RENDERING
+        // -------------------------
+        function getCombinedErrors(sectionName) {
+            const custom = appState.customCheckboxes[sectionName];
+            return [...defaultErrors[sectionName], ...(Array.isArray(custom) ? custom : [])];
+        }
+
+        function generateCheckboxHTML(item, sectionName, inputName) {
+            let isCustom = !defaultErrors[sectionName].find(e => e.val === item.val);
+            const valAttr = escapeHtmlAttr(item.val);
+            const valLabel = escapeHtmlForTextarea(item.val);
+            return `
+                <div class="checkbox-wrapper ${item.type} ${isCustom ? 'custom' : ''}">
+                    <input type="checkbox" name="${inputName}" value="${valAttr}" data-type="${item.type}">
+                    <label>${valLabel}</label>
+                    ${isCustom ? `<button type="button" class="delete-btn" data-remove-section="${sectionName}" data-remove-val="${valAttr}" aria-label="Remove custom error">✖</button>` : ''}
+                </div>
+            `;
+        }
+
+        function bindCustomCheckboxDeleteButtons() {
+            const form = document.getElementById('auditForm');
+            if (!form || form._i9DeleteErrBound) return;
+            form._i9DeleteErrBound = true;
+            form.addEventListener('click', (e) => {
+                const btn = e.target.closest('.delete-btn[data-remove-section]');
+                if (!btn) return;
+                e.preventDefault();
+                const section = btn.getAttribute('data-remove-section');
+                const val = btn.getAttribute('data-remove-val');
+                if (section && val != null) removeCustomCheckbox(section, val);
+            });
+        }
+
+        function renderStaticSectionCheckboxes(sectionName) {
+            const container = document.getElementById(`container_${sectionName}`);
+            if (!container) return;
+            const checkedVals = [];
+            container.querySelectorAll('input[type="checkbox"]').forEach((cb) => {
+                if (cb.checked) checkedVals.push(cb.value);
+            });
+            container.innerHTML = '';
+            getCombinedErrors(sectionName).forEach((item) => {
+                container.innerHTML += generateCheckboxHTML(item, sectionName, sectionName);
+            });
+            checkedVals.forEach((val) => {
+                container.querySelectorAll('input[type="checkbox"]').forEach((cb) => {
+                    if (cb.value === val) cb.checked = true;
+                });
+            });
+        }
+
+        function addCustomCheckbox(sectionName) {
+            let prefix = sectionName.split('_')[0];
+            let val = document.getElementById(`custom_${prefix}_input`).value.trim();
+            let type = document.getElementById(`custom_${prefix}_type`).value;
+
+            if(!val) return alert("Enter error description.");
+            if(getCombinedErrors(sectionName).find(i => i.val === val)) return alert("Error exists.");
+
+            appState.customCheckboxes[sectionName].push({val: val, type: type});
+            saveState();
+            document.getElementById(`custom_${prefix}_input`).value = '';
+            
+            if(sectionName === 'sec3_err') {
+                for(let i=1; i<=appState.revCount; i++) renderSec3Checkboxes(i);
+            } else {
+                renderStaticSectionCheckboxes(sectionName);
+            }
+        }
+
+        function removeCustomCheckbox(sectionName, val) {
+            appState.customCheckboxes[sectionName] = appState.customCheckboxes[sectionName].filter(i => i.val !== val);
+            saveState();
+            if(sectionName === 'sec3_err') {
+                for(let i=1; i<=appState.revCount; i++) renderSec3Checkboxes(i);
+            } else {
+                renderStaticSectionCheckboxes(sectionName);
+            }
+        }
+
+        function addReverificationBlock() {
+            appState.revCount++;
+            let idx = appState.revCount;
+            let html = `
+                <div class="rev-block" id="rev_block_${idx}">
+                    <div class="rev-header">
+                        <h4>Re-verification ${idx}</h4>
+                        ${idx > 1 ? `<button type="button" class="btn btn-outline btn-small" onclick="removeReverificationBlock(${idx})">Remove</button>` : ''}
+                    </div>
+                    <div class="checkbox-container" id="container_sec3_err_${idx}"></div>
+                    <div class="form-group" style="margin-top: 15px;">
+                        <label>Notes for Re-verification ${idx}</label>
+                        <textarea id="sec3Comments_${idx}"></textarea>
+                    </div>
+                </div>
+            `;
+            document.getElementById('reverifications-wrapper').insertAdjacentHTML('beforeend', html);
+            renderSec3Checkboxes(idx);
+        }
+
+        function removeReverificationBlock(idx) {
+            document.getElementById(`rev_block_${idx}`).remove();
+        }
+
+        function renderSec3Checkboxes(idx) {
+            const container = document.getElementById(`container_sec3_err_${idx}`);
+            if(!container) return;
+            let checkedValues = [];
+            container.querySelectorAll('input:checked').forEach(cb => checkedValues.push(cb.value));
+            container.innerHTML = '';
+            getCombinedErrors('sec3_err').forEach(item => {
+                container.innerHTML += generateCheckboxHTML(item, 'sec3_err', `sec3_err_${idx}`);
+            });
+            checkedValues.forEach((val) => {
+                container.querySelectorAll('input[type="checkbox"]').forEach((cb) => {
+                    if (cb.value === val) cb.checked = true;
+                });
+            });
+        }
+
+        // -------------------------
+        // RECOMMENDATIONS LOGIC
+        // -------------------------
+        function updateRecState(errorKey, value) {
+            appState.recommendations[errorKey] = value;
+        }
+
+        function buildRecommendationsTab() {
+            const container = document.getElementById('dynamic-recs-container');
+            if (!container) return;
+            container.innerHTML = '';
+            let hasAny = false;
+
+            function processSection(title, inputNamePattern, sectionPrefix, contextLabel) {
+                let checkboxes = document.querySelectorAll(`input[name="${inputNamePattern}"]:checked`);
+                if(checkboxes.length === 0) return;
+                
+                hasAny = true;
+                let html = `<h3>${title}</h3>`;
+                
+                checkboxes.forEach(cb => {
+                    let errVal = cb.value;
+                    let type = cb.getAttribute('data-type') || 'technical';
+                    let uniqueKey = `${sectionPrefix}_${errVal}`;
+                    
+                    // Auto-Population Logic
+                    let defaultText = autoRecMap[errVal] || '';
+                    let existingText = appState.recommendations[uniqueKey];
+                    
+                    if (existingText === undefined || existingText === null) {
+                        existingText = defaultText;
+                        appState.recommendations[uniqueKey] = defaultText;
+                    }
+
+                    const safeTaBody = escapeHtmlForTextarea(existingText);
+                    const safeRecKey = escapeHtmlAttr(uniqueKey);
+                    
+                    html += `
+                        <div class="mapped-rec-card ${type}-card">
+                            <div class="rec-error-title">
+                                <div>${contextLabel}: <span style="color: #b91c1c;">${escapeHtmlForTextarea(errVal)}</span></div>
+                                <span>${type.toUpperCase()}</span>
+                            </div>
+                            <div class="form-group">
+                                <textarea id="rec_ta_${safeRecKey.replace(/[^a-zA-Z0-9_-]/g, '_')}" 
+                                    data-rec-key="${safeRecKey}"
+                                    placeholder="Enter recommendation or corrective action..."
+                                    onfocus="lastFocusedTextarea = this;"
+                                >${safeTaBody}</textarea>
+                                <div style="text-align: right; margin-top: 5px;">
+                                    <button type="button" class="btn btn-outline btn-small" data-save-template-for="${safeRecKey.replace(/[^a-zA-Z0-9_-]/g, '_')}">Save text as Template</button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+                container.innerHTML += html;
+            }
+
+            processSection('Section 1 Errors', 'sec1_err', 's1', 'Sec 1 Error');
+            processSection('Section 2 Errors', 'sec2_err', 's2', 'Sec 2 Error');
+            for(let i=1; i<=appState.revCount; i++) {
+                if(document.getElementById(`rev_block_${i}`)) {
+                    processSection(`Section 3: Re-verification ${i}`, `sec3_err_${i}`, `s3_${i}`, `Rev ${i} Error`);
+                }
+            }
+            if(!hasAny) {
+                container.innerHTML = `<div class="recs-empty-state" role="status"><strong>No mapped errors yet</strong>Select errors in Sections 1–3 (or import from Excel), then return here to edit recommendations for each item.</div>`;
+            }
+        }
+
+        function bindRecommendationsTextareaSync() {
+            const container = document.getElementById('dynamic-recs-container');
+            if (!container || container._i9RecTaBound) return;
+            container._i9RecTaBound = true;
+            container.addEventListener('input', (e) => {
+                const ta = e.target;
+                if (!ta || ta.tagName !== 'TEXTAREA') return;
+                const key = ta.getAttribute('data-rec-key');
+                if (!key) return;
+                updateRecState(key, ta.value);
+            });
+            container.addEventListener('click', (e) => {
+                const btn = e.target.closest('[data-save-template-for]');
+                if (!btn) return;
+                const idSuffix = btn.getAttribute('data-save-template-for');
+                const ta = container.querySelector('textarea[id="rec_ta_' + idSuffix + '"]');
+                if (ta) saveAsTemplateFromTextarea(ta);
+            });
+        }
+
+        function saveAsTemplateFromTextarea(textareaEl) {
+            if (!textareaEl) return;
+            let text = textareaEl.value.trim();
+            if(!text) return alert("Text area is empty.");
+            if(appState.templates.includes(text)) return alert("Template already saved.");
+            appState.templates.push(text);
+            saveState();
+            updateTemplateDropdown();
+            alert("Template saved to Library!");
+        }
+
+        function saveAsTemplate(textareaId) {
+            let text = document.getElementById(textareaId).value.trim();
+            if(!text) return alert("Text area is empty.");
+            if(appState.templates.includes(text)) return alert("Template already saved.");
+            appState.templates.push(text);
+            saveState();
+            updateTemplateDropdown();
+            alert("Template saved to Library!");
+        }
+
+        function updateTemplateDropdown() {
+            let select = document.getElementById('global_template_select');
+            select.innerHTML = '<option value="">-- Select a saved recommendation template --</option>';
+            appState.templates.forEach(text => {
+                let opt = document.createElement('option');
+                opt.value = text;
+                opt.innerText = text.length > 80 ? text.substring(0, 80) + "..." : text;
+                select.appendChild(opt);
+            });
+        }
+
+        function insertGlobalTemplate() {
+            let select = document.getElementById('global_template_select');
+            let val = select.value;
+            if(!val) return alert("Please select a template first.");
+            if(!lastFocusedTextarea) return alert("Please click inside a text box first so the app knows where to insert the template.");
+            
+            if(lastFocusedTextarea.value.trim() !== '') lastFocusedTextarea.value += "\n\n" + val;
+            else lastFocusedTextarea.value = val;
+            
+            lastFocusedTextarea.dispatchEvent(new Event('input'));
+            select.selectedIndex = 0;
+        }
+
+        // -------------------------
+        // NAVIGATION & REPORTING
+        // -------------------------
+        const titles = { 'tab-admin': 'Audit Administration', 'tab-sec1': 'Section 1 Review', 'tab-sec2': 'Section 2 Review', 'tab-sec3': 'Section 3 Review', 'tab-recs': 'Recommendations & Resolutions', 'tab-report': 'Final Report Preview', 'tab-settings': 'Settings' };
+        const TAB_IDS = ['tab-admin', 'tab-sec1', 'tab-sec2', 'tab-sec3', 'tab-recs', 'tab-report', 'tab-settings'];
+
+        function openTab(tabId, element) {
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            
+            if(element) element.classList.add('active');
+            else {
+                const idx = TAB_IDS.indexOf(tabId);
+                const navItems = document.querySelectorAll('.nav-item');
+                if (idx >= 0 && navItems[idx]) navItems[idx].classList.add('active');
+            }
+            document.getElementById('pageTitle').innerText = titles[tabId];
+
+            if (tabId === 'tab-recs') buildRecommendationsTab();
+            if (tabId === 'tab-report') {
+                sanitizeReportPreviewContent();
+                updateExportFilenameHint();
+            }
+            if (tabId === 'tab-settings') initOutputFolderPanel();
+        }
+
+        function returnToAuditDetailsTab() {
+            openTab('tab-admin', null);
+        }
+
+        function refreshAuditDetails() {
+            if (!confirm('Clear this audit and start fresh for a new employee? Department and Reviewed by will be kept.')) return;
+
+            appState.recommendations = {};
+
+            const employeeName = document.getElementById('employeeName');
+            if (employeeName) employeeName.value = '';
+            const auditDate = document.getElementById('auditDate');
+            if (auditDate) auditDate.valueAsDate = new Date();
+            ['sec1Comments', 'sec2Comments', 'employeeExplanation', 'empExplanation'].forEach((id) => {
+                const el = document.getElementById(id);
+                if (el) el.value = '';
+            });
+
+            document.querySelectorAll('#auditForm input[type="checkbox"]').forEach((cb) => {
+                cb.checked = false;
+            });
+
+            document.getElementById('reverifications-wrapper').innerHTML = '';
+            appState.revCount = 0;
+            addReverificationBlock();
+
+            const rp = document.getElementById('reportPreview');
+            if (rp) rp.innerHTML = '';
+            activeWordDocumentPath = null;
+            clearWordDocumentPanel();
+            resetReportEditing();
+            updateActiveWordSaveUI();
+
+            const recContainer = document.getElementById('dynamic-recs-container');
+            if (recContainer) recContainer.innerHTML = '';
+
+            updateExportFilenameHint();
+            refreshWordExportTooltips();
+            returnToAuditDetailsTab();
+        }
+
+        window.refreshAuditDetails = refreshAuditDetails;
+
+        function clearSelectedAuditErrors() {
+            appState.recommendations = {};
+            document.querySelectorAll('#auditForm input[type="checkbox"]').forEach((cb) => {
+                cb.checked = false;
+            });
+            ['sec1Comments', 'sec2Comments', 'employeeExplanation', 'empExplanation'].forEach((id) => {
+                const el = document.getElementById(id);
+                if (el) el.value = '';
+            });
+            const wrapper = document.getElementById('reverifications-wrapper');
+            if (wrapper) {
+                wrapper.innerHTML = '';
+                appState.revCount = 0;
+                addReverificationBlock();
+            }
+            const recContainer = document.getElementById('dynamic-recs-container');
+            if (recContainer) recContainer.innerHTML = '';
+            saveState();
+        }
+
+        function auditHasErrorSelectionsOrDraftNotes() {
+            if (document.querySelectorAll('#auditForm input[type="checkbox"]:checked').length > 0) {
+                return true;
+            }
+            for (const id of ['sec1Comments', 'sec2Comments', 'employeeExplanation', 'empExplanation']) {
+                const el = document.getElementById(id);
+                if (el && el.value.trim()) return true;
+            }
+            for (let i = 1; i <= appState.revCount; i++) {
+                const notesEl = document.getElementById('sec3Comments_' + i);
+                if (notesEl && notesEl.value.trim()) return true;
+            }
+            return Object.keys(appState.recommendations).some((key) => {
+                const v = appState.recommendations[key];
+                return v !== undefined && v !== null && String(v).trim() !== '';
+            });
+        }
+
+        function prepareForNextEmployeeAfterNoErrorsSave() {
+            const employeeName = document.getElementById('employeeName');
+            if (employeeName) employeeName.value = '';
+            const auditDate = document.getElementById('auditDate');
+            if (auditDate) auditDate.valueAsDate = new Date();
+
+            clearSelectedAuditErrors();
+
+            const rp = document.getElementById('reportPreview');
+            if (rp) rp.innerHTML = '';
+            activeWordDocumentPath = null;
+            clearWordDocumentPanel();
+            resetReportEditing();
+            updateActiveWordSaveUI();
+            updateExportFilenameHint();
+            refreshWordExportTooltips();
+            saveState();
+            returnToAuditDetailsTab();
+
+            if (employeeName) employeeName.focus();
+        }
+
+        async function generateNoErrorsAndSavePdf() {
+            const employeeNameEl = document.getElementById('employeeName');
+            if (!employeeNameEl || !employeeNameEl.value.trim()) {
+                alert('Enter Employee Full Name first.');
+                if (employeeNameEl) employeeNameEl.focus();
+                return;
+            }
+            const auditDateEl = document.getElementById('auditDate');
+            if (!auditDateEl || !auditDateEl.value) {
+                alert('Enter Date of Audit first.');
+                if (auditDateEl) auditDateEl.focus();
+                return;
+            }
+
+            if (auditHasErrorSelectionsOrDraftNotes()) {
+                if (!confirm('This audit already has errors or notes entered. Generate a clean no-errors preview anyway? Those selections will be cleared.')) {
+                    return;
+                }
+            }
+
+            const btn = document.getElementById('btnNoErrorsSavePdf');
+            const prevLabel = btn ? btn.textContent : '';
+            if (btn) {
+                btn.disabled = true;
+                btn.textContent = DEMO_MODE ? 'Generating preview…' : 'Saving PDF…';
+            }
+
+            try {
+                clearSelectedAuditErrors();
+                generateReport(null);
+                await waitForReportPreviewPaint();
+                if (DEMO_MODE) {
+                    alert('No-errors report preview generated. Saving files is not available in the public demo.');
+                    return;
+                }
+                const saved = await downloadReportAsPdf({
+                    successMessage: 'Saved no-errors PDF:\n{path}\n\nReady for the next employee — enter the next name.',
+                    skipReturnTab: true,
+                });
+                if (saved) {
+                    prepareForNextEmployeeAfterNoErrorsSave();
+                }
+            } finally {
+                if (btn) {
+                    btn.disabled = false;
+                    btn.textContent = prevLabel || (DEMO_MODE ? 'No Errors (preview)' : 'No Errors');
+                }
+            }
+        }
+
+        window.generateNoErrorsAndSavePdf = generateNoErrorsAndSavePdf;
+
+        function bindNoErrorsShortcut() {
+            if (document._i9NoErrorsShortcutBound) return;
+            document._i9NoErrorsShortcutBound = true;
+            document.addEventListener('keydown', (e) => {
+                if (!(e.ctrlKey || e.metaKey) || !e.shiftKey || e.altKey) return;
+                if (String(e.key || '').toLowerCase() !== 'n') return;
+                const t = e.target;
+                if (t && (t.tagName === 'TEXTAREA' || t.isContentEditable)) return;
+                e.preventDefault();
+                generateNoErrorsAndSavePdf();
+            });
+        }
+
+        function generateReport(element) {
+            activeWordDocumentPath = null;
+            clearWordDocumentPanel();
+            updateActiveWordSaveUI();
+            buildRecommendationsTab(); 
+            openTab('tab-report', element);
+
+
+            const noErrorsInSection = '<p style="margin:8px 0;font-size:11pt;color:#64748b;font-style:italic;">No Errors found</p>';
+
+            function escReportVal(s) {
+                if (s == null || s === '') return '';
+                return String(s)
+                    .replace(/&/g, '&amp;')
+                    .replace(/</g, '&lt;')
+                    .replace(/>/g, '&gt;')
+                    .replace(/"/g, '&quot;');
+            }
+
+            function getMappedReportHTML(inputNamePattern, sectionPrefix) {
+                let checkboxes = document.querySelectorAll(`input[name="${inputNamePattern}"]:checked`);
+                if (checkboxes.length === 0) return noErrorsInSection;
+                
+                let html = '';
+                checkboxes.forEach(cb => {
+                    let errVal = cb.value;
+                    let errType = cb.getAttribute('data-type') || 'technical';
+                    let uniqueKey = `${sectionPrefix}_${errVal}`;
+                    const recRaw = appState.recommendations[uniqueKey];
+                    const recText = recRaw == null ? '' : String(recRaw).trim();
+                    
+                    const hiStyle =
+                        errType === 'substantive'
+                            ? 'background-color:#dbeafe;color:#1e3a8a;padding:2px 6px;border-radius:4px;'
+                            : 'background-color:#fef08a;color:#78350f;padding:2px 6px;border-radius:4px;';
+
+                    const actionBlock = recText
+                        ? `<p class="report-action-req" style="margin:0 0 14px 0;background-color:#ffffff;border:1px solid #e2e8f0;padding:12px 14px;font-size:11pt;line-height:1.55;color:#334155;white-space:pre-wrap;overflow-wrap:break-word;word-break:break-word;">
+                            <strong style="color:#0F4C81;">Action Required:</strong><br>${escReportVal(recText)}
+                        </p>`
+                        : '';
+
+                    html += `
+                        <p style="margin:0 0 6px 0;font-weight:600;color:#334155;font-size:11pt;line-height:1.45;">
+                            Issue: <span style="${hiStyle}">${errVal}</span>
+                        </p>
+                        ${actionBlock}
+                    `;
+                });
+                return html;
+            }
+
+            let sec3ReportHTML = '';
+            for (let i = 1; i <= appState.revCount; i++) {
+                if (!document.getElementById(`rev_block_${i}`)) continue;
+                const notesEl = document.getElementById(`sec3Comments_${i}`);
+                const notesRaw = notesEl ? notesEl.value.trim() : '';
+                const mapped = getMappedReportHTML(`sec3_err_${i}`, `s3_${i}`);
+                sec3ReportHTML += `
+                        <div style="margin-top:16px;padding-top:8px;">
+                            <p style="margin:0 0 8px 0;"><strong style="color:#0F4C81;font-size:11pt;">Re-verification ${i}</strong></p>
+                            ${mapped}
+                            ${notesRaw ? `<p style="margin:10px 0 0 0;font-size:10pt;color:#475569;line-height:1.5;"><em>Notes:</em> ${notesRaw}</p>` : ''}
+                        </div>
+                    `;
+            }
+            if (sec3ReportHTML === '') sec3ReportHTML = noErrorsInSection;
+
+            const purposeV = escReportVal(document.getElementById('auditPurpose').value) || 'N/A';
+            const deptV = escReportVal(document.getElementById('department').value) || 'N/A';
+            const reviewedV = escReportVal(document.getElementById('auditorName').value) || 'N/A';
+            const empV = escReportVal(document.getElementById('employeeName').value) || 'N/A';
+            const auditDateRaw = document.getElementById('auditDate').value || '';
+            const auditDateV = escReportVal(auditDateRaw) || 'N/A';
+            const employeeExplanationRaw = document.getElementById('employeeExplanation').value.trim();
+            const empExplanationRaw = document.getElementById('empExplanation').value.trim();
+            const correctionsCellStyle = employeeExplanationRaw
+                ? 'padding:20px 18px 40px;background-color:#f8fafc;border:none;font-size:11pt;line-height:1.6;color:#1e293b;vertical-align:top;white-space:pre-wrap;overflow-wrap:break-word;word-break:break-word;min-height:280px;'
+                : 'padding:14px 16px;background-color:#f8fafc;border:none;font-size:11pt;line-height:1.6;color:#1e293b;vertical-align:top;white-space:pre-wrap;overflow-wrap:break-word;word-break:break-word;';
+
+            const html = `
+                <table id="auditNoteExportHeader" class="audit-note-doc-header" role="presentation" cellspacing="0" cellpadding="0" style="width:100%;border-collapse:collapse;margin:0 0 22px 0;border:none;border-radius:10px;overflow:hidden;">
+                    <tr>
+                        <td style="background-color:#0F4C81;border:none;text-align:center;padding:20px 18px 8px;vertical-align:top;">
+                            <p style="margin:0;padding:0;font-size:18pt;font-weight:700;color:#ffffff;letter-spacing:0.02em;line-height:1.2;">Form I-9 Audit Note</p>
+                            <p style="margin:10px 0 0 0;padding:0;font-size:10pt;color:#ffffff;line-height:1.45;">Internal Compliance Review &amp; Resolution Document</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="background-color:#0F4C81;border:none;text-align:right;padding:8px 20px 16px;vertical-align:top;">
+                            <p style="margin:0;padding:0;font-size:10pt;color:#ffffff;">Audit date: ${auditDateV}</p>
+                        </td>
+                    </tr>
+                </table>
+
+                <div id="auditNoteExportBody" class="audit-note-export-body">
+                <table role="presentation" cellspacing="0" cellpadding="0" style="width:100%;border-collapse:collapse;margin:0 0 22px 0;border:none;">
+                    <tr>
+                        <td style="width:50%;vertical-align:top;padding:14px 16px;background-color:#f1f5f9;border:none;">
+                            <span style="display:block;font-size:8pt;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#64748b;margin-bottom:6px;">Purpose</span>
+                            <span style="display:block;font-size:11pt;color:#0f172a;line-height:1.45;">${purposeV}</span>
+                        </td>
+                        <td style="width:50%;vertical-align:top;padding:14px 16px;background-color:#f1f5f9;border:none;">
+                            <span style="display:block;font-size:8pt;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#64748b;margin-bottom:6px;">Department</span>
+                            <span style="display:block;font-size:11pt;color:#0f172a;line-height:1.45;">${deptV}</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="vertical-align:top;padding:14px 16px;background-color:#f1f5f9;border:none;">
+                            <span style="display:block;font-size:8pt;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#64748b;margin-bottom:6px;">Reviewed by</span>
+                            <span style="display:block;font-size:11pt;color:#0f172a;line-height:1.45;">${reviewedV}</span>
+                        </td>
+                        <td style="vertical-align:top;padding:14px 16px;background-color:#f1f5f9;border:none;">
+                            <span style="display:block;font-size:8pt;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#64748b;margin-bottom:6px;">Employee Name</span>
+                            <span style="display:block;font-size:11pt;color:#0f172a;line-height:1.45;">${empV}</span>
+                        </td>
+                    </tr>
+                </table>
+
+                <div style="margin-bottom:22px;">
+                    <p style="font-weight:700;margin:0 0 10px 0;color:#334155;font-size:11pt;">Error classification guide</p>
+                    <table role="presentation" cellspacing="0" cellpadding="0" style="width:100%;border-collapse:collapse;margin-bottom:10px;border:none;">
+                        <tr>
+                            <td style="background-color:#1d4ed8;border:none;padding:12px 14px;">
+                                <p style="margin:0;color:#ffffff;font-size:11pt;line-height:1.5;text-align:left;"><strong>Blue</strong> – The errors marked in blue are Substantive errors that usually require an explanation or a new I-9 to be completed.</p>
+                            </td>
+                        </tr>
+                    </table>
+                    <table role="presentation" cellspacing="0" cellpadding="0" style="width:100%;border-collapse:collapse;margin-bottom:4px;border:none;">
+                        <tr>
+                            <td style="background-color:#facc15;border:none;padding:12px 14px;">
+                                <p style="margin:0;color:#1e293b;font-size:11pt;line-height:1.5;text-align:left;"><strong>Yellow</strong> – The errors marked in yellow are Technical errors that can be corrected in the I-9 with initials and date once completed.</p>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+
+                <table role="presentation" cellspacing="0" cellpadding="0" style="width:100%;border-collapse:collapse;margin-bottom:0;border:none;">
+                    <tr>
+                        <td style="background-color:#e2e8f0;color:#0F4C81;padding:10px 14px;font-weight:700;font-size:12pt;border:none;">Section 1 Findings &amp; Corrective Actions (Employee)</td>
+                    </tr>
+                </table>
+                <table role="presentation" cellspacing="0" cellpadding="0" style="width:100%;border-collapse:collapse;margin-bottom:24px;border:none;">
+                    <tr>
+                        <td style="padding:14px 16px;background-color:#f8fafc;border:none;font-size:11pt;line-height:1.55;color:#1e293b;vertical-align:top;">
+                            ${getMappedReportHTML('sec1_err', 's1')}
+                            ${document.getElementById('sec1Comments').value ? `<p style="margin-top:14px;margin-bottom:0;background-color:#eef2f7;padding:12px 14px;line-height:1.55;font-size:11pt;overflow-wrap:break-word;word-break:break-word;"><strong style="color:#0F4C81;">General Comments:</strong> ${document.getElementById('sec1Comments').value}</p>` : ''}
+                        </td>
+                    </tr>
+                </table>
+
+                <table role="presentation" cellspacing="0" cellpadding="0" style="width:100%;border-collapse:collapse;margin-bottom:0;border:none;">
+                    <tr>
+                        <td style="background-color:#e2e8f0;color:#0F4C81;padding:10px 14px;font-weight:700;font-size:12pt;border:none;">Section 2 Findings &amp; Corrective Actions (Employer)</td>
+                    </tr>
+                </table>
+                <table role="presentation" cellspacing="0" cellpadding="0" style="width:100%;border-collapse:collapse;margin-bottom:24px;border:none;">
+                    <tr>
+                        <td style="padding:14px 16px;background-color:#f8fafc;border:none;font-size:11pt;line-height:1.55;color:#1e293b;vertical-align:top;">
+                            ${getMappedReportHTML('sec2_err', 's2')}
+                            ${document.getElementById('sec2Comments').value ? `<p style="margin-top:14px;margin-bottom:0;background-color:#eef2f7;padding:12px 14px;line-height:1.55;font-size:11pt;overflow-wrap:break-word;word-break:break-word;"><strong style="color:#0F4C81;">General Comments:</strong> ${document.getElementById('sec2Comments').value}</p>` : ''}
+                        </td>
+                    </tr>
+                </table>
+
+                <table role="presentation" cellspacing="0" cellpadding="0" style="width:100%;border-collapse:collapse;margin-bottom:0;border:none;">
+                    <tr>
+                        <td style="background-color:#e2e8f0;color:#0F4C81;padding:10px 14px;font-weight:700;font-size:12pt;border:none;">Section 3 / Re-verification Findings</td>
+                    </tr>
+                </table>
+                <table role="presentation" cellspacing="0" cellpadding="0" style="width:100%;border-collapse:collapse;margin-bottom:24px;border:none;">
+                    <tr>
+                        <td style="padding:14px 16px;background-color:#f8fafc;border:none;font-size:11pt;line-height:1.55;color:#1e293b;vertical-align:top;">
+                            ${sec3ReportHTML}
+                        </td>
+                    </tr>
+                </table>
+
+                <table role="presentation" cellspacing="0" cellpadding="0" style="width:100%;border-collapse:collapse;margin-bottom:0;border:none;">
+                    <tr>
+                        <td style="background-color:#e2e8f0;color:#0F4C81;padding:12px 16px;font-weight:700;font-size:11pt;line-height:1.35;border:none;">Corrections completed by Employer</td>
+                    </tr>
+                </table>
+                <table role="presentation" cellspacing="0" cellpadding="0" style="width:100%;border-collapse:collapse;margin-bottom:24px;border:none;">
+                    <tr>
+                        <td style="${correctionsCellStyle}">
+                            ${escReportVal(employeeExplanationRaw)}
+                        </td>
+                    </tr>
+                </table>
+
+                <table role="presentation" cellspacing="0" cellpadding="0" style="width:100%;border-collapse:collapse;margin-bottom:0;border:none;">
+                    <tr>
+                        <td style="background-color:#e2e8f0;color:#0F4C81;padding:10px 14px;font-weight:700;font-size:12pt;border:none;">Employer Explanation</td>
+                    </tr>
+                </table>
+                <table role="presentation" cellspacing="0" cellpadding="0" style="width:100%;border-collapse:collapse;margin-bottom:24px;border:none;">
+                    <tr>
+                        <td style="padding:14px 16px 10px;background-color:#f8fafc;border:none;font-size:11pt;line-height:1.55;color:#1e293b;vertical-align:top;white-space:pre-wrap;overflow-wrap:break-word;word-break:break-word;">
+                            ${escReportVal(empExplanationRaw)}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding:0 16px 14px;background-color:#f8fafc;border:none;font-size:11pt;vertical-align:top;white-space:normal;">
+                            <div class="report-sig-lines">
+                                <span class="report-sig-label">Name:</span>
+                                <span class="report-sig-label">Title:</span>
+                                <span class="report-sig-label">Signature:</span>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+                </div>
+            `;
+            const rp = document.getElementById('reportPreview');
+            rp.innerHTML = html;
+            resetReportEditing();
+            updateReportPreviewEmptyState();
+            initExportToolbar();
+            initDemoRestrictions();
+            updateExportFilenameHint();
+        }
+
+
+
+        function bindRecommendationsLiveRefresh() {
+            const form = document.getElementById('auditForm');
+            if (!form || form._i9RecCheckboxBound) return;
+            form._i9RecCheckboxBound = true;
+            form.addEventListener('change', (e) => {
+                const t = e.target;
+                if (!t || t.type !== 'checkbox') return;
+                const n = t.getAttribute('name') || '';
+                if (n !== 'sec1_err' && n !== 'sec2_err' && !/^sec3_err_\d+$/.test(n)) return;
+                const recTab = document.getElementById('tab-recs');
+                if (recTab && recTab.classList.contains('active')) buildRecommendationsTab();
+            });
+        }
+
+        function loadSampleDemoData() {
+            const today = new Date().toISOString().slice(0, 10);
+            const setVal = (id, val) => {
+                const el = document.getElementById(id);
+                if (el) el.value = val;
+            };
+            setVal('employeeName', 'Jane Doe (Sample)');
+            setVal('department', 'Operations');
+            setVal('auditorName', 'HR Department');
+            setVal('auditDate', today);
+            setVal('auditPurpose', 'Form I-9 Correction');
+            const checkError = (sectionName, errorVal) => {
+                const container = document.getElementById('container_' + sectionName);
+                if (!container) return;
+                container.querySelectorAll('input[type="checkbox"]').forEach((cb) => {
+                    if (cb.value === errorVal) cb.checked = true;
+                });
+            };
+            checkError('sec1_err', 'Missing Address');
+            checkError('sec2_err', 'Missing Date of Hire');
+            saveState();
+            updateExportFilenameHint();
+            refreshWordExportTooltips();
+            openTab('tab-admin', document.querySelector('.nav-item'));
+            alert('Sample employee loaded.\n\n1. Review Audit Details\n2. Walk through Sections 1–3\n3. Open Recs, then generate Report (step 6)\n4. Preview the formatted audit note (saving is disabled in this demo)');
+        }
+        window.loadSampleDemoData = loadSampleDemoData;
+
+        window.onload = async function () {
+            loadState();
+            await mergePersistedLibraryFromDisk();
+            bindCustomCheckboxDeleteButtons();
+            bindRecommendationsLiveRefresh();
+            bindRecommendationsTextareaSync();
+            bindNoErrorsShortcut();
+            initExcelImportFileInput();
+            initLibraryImportFileInput();
+            initExportToolbar();
+            initDemoRestrictions();
+            updateExportFilenameHint();
+            sanitizeReportPreviewContent();
+            const en = document.getElementById('employeeName');
+            if (en) {
+                en.addEventListener('input', () => {
+                    updateExportFilenameHint();
+                    refreshWordExportTooltips();
+                });
+            }
+            ['department', 'auditorName'].forEach((id) => {
+                const el = document.getElementById(id);
+                if (el) el.addEventListener('input', saveState);
+            });
+        };
+    </script>
+</body>
+</html>

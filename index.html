@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HR Pro I-9 Audit Notes Prep — Live Demo</title>
+    <meta name="description" content="Prepare Form I-9 audit notes with structured error tracking, recommendations, and export to Word or PDF. Try the free browser demo or download the desktop app.">
+    <style>
+        :root {
+            --primary: #0F4C81;
+            --secondary: #47B5FF;
+            --bg: #F4F7F6;
+            --text: #1e293b;
+            --muted: #64748b;
+        }
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+        }
+        .hero {
+            background: linear-gradient(135deg, #0F4C81 0%, #1a6bb5 55%, #47B5FF 100%);
+            color: white;
+            padding: 64px 24px 72px;
+            text-align: center;
+        }
+        .hero-badge {
+            display: inline-block;
+            background: rgba(255,255,255,0.15);
+            border: 1px solid rgba(255,255,255,0.25);
+            padding: 6px 14px;
+            border-radius: 999px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            margin-bottom: 20px;
+        }
+        .hero h1 {
+            margin: 0 0 16px;
+            font-size: clamp(1.9rem, 4vw, 2.75rem);
+            font-weight: 800;
+            line-height: 1.15;
+        }
+        .hero p {
+            max-width: 640px;
+            margin: 0 auto 32px;
+            font-size: 1.08rem;
+            opacity: 0.95;
+        }
+        .cta-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 14px;
+            justify-content: center;
+            align-items: center;
+        }
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 14px 28px;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: transform 0.15s, box-shadow 0.15s;
+        }
+        .btn:hover { transform: translateY(-1px); }
+        .btn-primary {
+            background: white;
+            color: var(--primary);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.18);
+        }
+        .btn-outline {
+            background: transparent;
+            color: white;
+            border: 2px solid rgba(255,255,255,0.7);
+        }
+        .container {
+            max-width: 960px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+        .features {
+            padding: 56px 0;
+        }
+        .features h2 {
+            text-align: center;
+            color: var(--primary);
+            font-size: 1.6rem;
+            margin: 0 0 36px;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 20px;
+        }
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 4px 18px rgba(15, 76, 129, 0.07);
+            border: 1px solid #e2e8f0;
+        }
+        .card h3 {
+            margin: 0 0 10px;
+            font-size: 1.05rem;
+            color: var(--primary);
+        }
+        .card p {
+            margin: 0;
+            color: var(--muted);
+            font-size: 0.94rem;
+        }
+        .compare {
+            padding: 0 0 56px;
+        }
+        .compare table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 18px rgba(15, 76, 129, 0.07);
+        }
+        .compare th, .compare td {
+            padding: 14px 18px;
+            text-align: left;
+            border-bottom: 1px solid #e2e8f0;
+            font-size: 0.92rem;
+        }
+        .compare th {
+            background: #f8fafc;
+            color: var(--primary);
+            font-weight: 700;
+        }
+        .compare tr:last-child td { border-bottom: none; }
+        .yes { color: #059669; font-weight: 700; }
+        .no { color: #94a3b8; }
+        footer {
+            text-align: center;
+            padding: 32px 24px 48px;
+            color: var(--muted);
+            font-size: 0.88rem;
+        }
+        footer a { color: var(--primary); }
+    </style>
+</head>
+<body>
+    <header class="hero">
+        <div class="container">
+            <div class="hero-badge">Public demo</div>
+            <h1>HR Pro I-9 Audit Notes Prep</h1>
+            <p>
+                Walk through a full I-9 audit workflow — capture Section 1–3 errors, map recommendations,
+                and export a polished audit note. No install required for the browser demo.
+            </p>
+            <div class="cta-row">
+                <a class="btn btn-primary" href="demo/">Launch live demo</a>
+            </div>
+        </div>
+    </header>
+
+    <section class="features">
+        <div class="container">
+            <h2>What you can try in the demo</h2>
+            <div class="grid">
+                <div class="card">
+                    <h3>Structured audit workflow</h3>
+                    <p>Step through administrative details, Sections 1–3, recommendations, and a formatted report preview.</p>
+                </div>
+                <div class="card">
+                    <h3>Error classification</h3>
+                    <p>Mark substantive vs. technical errors with color-coded guidance built into the report.</p>
+                </div>
+                <div class="card">
+                    <h3>Preview-only demo</h3>
+                    <p>Generate and review a formatted audit note in the browser. File downloads are disabled — the full desktop app handles Word, PDF, and Excel export.</p>
+                </div>
+                <div class="card">
+                    <h3>Sample employee</h3>
+                    <p>Click <strong>Load sample employee</strong> inside the demo to explore a pre-filled example audit.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="compare">
+        <div class="container">
+            <h2 style="text-align:center;color:var(--primary);margin-bottom:24px;">Browser demo vs. desktop app</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Feature</th>
+                        <th>Browser demo</th>
+                        <th>Desktop app</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Full audit workflow &amp; report</td>
+                        <td class="yes">Yes</td>
+                        <td class="yes">Yes</td>
+                    </tr>
+                    <tr>
+                        <td>Preview formatted audit report</td>
+                        <td class="yes">Yes</td>
+                        <td class="yes">Yes</td>
+                    </tr>
+                    <tr>
+                        <td>Download Word (.docx) / PDF / Excel</td>
+                        <td class="no">—</td>
+                        <td class="yes">Yes</td>
+                    </tr>
+                    <tr>
+                        <td>Save true .docx to Downloads</td>
+                        <td class="no">—</td>
+                        <td class="yes">Yes</td>
+                    </tr>
+                    <tr>
+                        <td>Choose output folder &amp; consolidate PDFs</td>
+                        <td class="no">—</td>
+                        <td class="yes">Yes</td>
+                    </tr>
+                    <tr>
+                        <td>Open &amp; edit saved Word in-app</td>
+                        <td class="no">—</td>
+                        <td class="yes">Yes</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <footer>
+        <p>
+            Demo data stays in your browser (localStorage). This is a <strong>preview-only</strong> demo — no files can be downloaded here.
+        </p>
+        <p><a href="demo/">Open demo</a></p>
+    </footer>
+</body>
+</html>
